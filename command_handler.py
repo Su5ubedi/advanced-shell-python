@@ -5,13 +5,14 @@ command_handler.py - Built-in command implementations for Advanced Shell Simulat
 
 import os
 import sys
+import signal
 import subprocess
 import stat
 import time
 from pathlib import Path
 from typing import List
 
-from shell_types import ParsedCommand
+from shell_types import ParsedCommand,JobStatus
 from job_manager import JobManager
 
 
@@ -42,6 +43,7 @@ class CommandHandler:
             'jobs': self.handle_jobs,
             'fg': self.handle_fg,
             'bg': self.handle_bg,
+            'stop': self.handle_stop,  # Temporary for testing bg command
             'help': self.handle_help
         }
 
@@ -415,6 +417,32 @@ class CommandHandler:
 
         if not self.job_manager.bring_to_foreground(job_id):
             raise ValueError(f"fg: failed to bring job {job_id} to foreground")
+
+    def handle_stop(self, args: List[str]) -> None:
+        """Stop a job for testing bg command (temporary testing feature)"""
+        if len(args) < 2:
+            raise ValueError("stop: missing job ID\nUsage: stop [job_id]")
+
+        try:
+            job_id = int(args[1])
+        except ValueError:
+            raise ValueError(f"stop: invalid job ID '{args[1]}': not a number")
+
+        job = self.job_manager.get_job(job_id)
+        if not job:
+            raise ValueError(f"stop: job {job_id} not found")
+
+        if not job.is_alive():
+            raise ValueError(f"stop: job {job_id} has already completed")
+
+        try:
+            os.kill(job.pid, signal.SIGSTOP)  # Stop the process
+            job.status = JobStatus.STOPPED
+            print(f"Job [{job_id}] stopped")
+        except ProcessLookupError:
+            raise ValueError(f"stop: process {job.pid} no longer exists")
+        except Exception as e:
+            raise ValueError(f"stop: failed to stop job {job_id}: {e}")
 
     def handle_bg(self, args: List[str]) -> None:
         """Background command"""

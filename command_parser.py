@@ -15,7 +15,7 @@ class CommandParser:
     BUILTIN_COMMANDS = {
         'cd', 'pwd', 'exit', 'echo', 'clear', 'ls', 'cat',
         'mkdir', 'rmdir', 'rm', 'touch', 'kill', 'jobs',
-        'fg', 'bg', 'stop', 'help'
+        'fg', 'bg', 'stop', 'help', 'schedule', 'scheduler', 'addjob'
     }
 
     def parse(self, input_str: str) -> Optional[ParsedCommand]:

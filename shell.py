@@ -4,12 +4,9 @@ shell.py - Main shell class for Advanced Shell Simulation
 """
 
 import os
-import sys
 import signal
 import subprocess
 import time
-from pathlib import Path
-from typing import Optional
 
 from job_manager import JobManager
 from command_handler import CommandHandler

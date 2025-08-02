@@ -32,7 +32,7 @@ Process 1 completed (Total time: 0.3s)
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
   Simulating execution time: 0.50s
-  Command executed successfully in 0.51s
+  Command executed successfully in 0.52s
 Running process 3 for 0.5s (Round-Robin)
   Command: mkdir test/rr_ts0.5_dir
   Simulating execution time: 0.50s
@@ -40,14 +40,14 @@ Running process 3 for 0.5s (Round-Robin)
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts0.5_*
   Simulating execution time: 0.40s
-  Command executed successfully in 0.42s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts0.5_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts0.5_file2.txt
+  Command executed successfully in 0.43s
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 10:09 test/rr_ts0.5_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 10:09 test/rr_ts0.5_file2.txt
 
 test/rr_ts0.5_dir:
 total 0
-drwxr-xr-x  2 stevens34  staff   64 Aug  2 09:34 .
-drwxr-xr-x  5 stevens34  staff  160 Aug  2 09:34 ..
+drwxr-xr-x  2 stevens34  staff   64 Aug  2 10:09 .
+drwxr-xr-x  5 stevens34  staff  160 Aug  2 10:09 ..
 Process 4 completed (Total time: 0.4s)
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
@@ -60,7 +60,7 @@ Running process 3 for 0.5s (Round-Robin)
 
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
-  Simulating execution time: 0.47s
+  Simulating execution time: 0.46s
   Command executed successfully in 0.48s
 Process 2 completed (Total time: 1.5s)
 Running process 3 for 0.5s (Round-Robin)
@@ -119,32 +119,32 @@ Starting scheduler...
 Running process 1 for 0.3s (Round-Robin)
   Command: touch test/rr_ts1.0_file1.txt
   Simulating execution time: 0.30s
-  Command executed successfully in 0.31s
+  Command executed successfully in 0.32s
 Process 1 completed (Total time: 0.3s)
 Running process 2 for 1.0s (Round-Robin)
   Command: echo 'Job 2 with time slice 1.0' > test/rr_ts1.0_file2.txt
   Simulating execution time: 1.00s
-  Command executed successfully in 1.02s
+  Command executed successfully in 1.01s
 Running process 3 for 1.0s (Round-Robin)
   Command: mkdir test/rr_ts1.0_dir
   Simulating execution time: 1.00s
-  Command executed successfully in 1.01s
+  Command executed successfully in 1.02s
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts1.0_*
   Simulating execution time: 0.40s
   Command executed successfully in 0.42s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts1.0_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts1.0_file2.txt
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 10:09 test/rr_ts1.0_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 10:09 test/rr_ts1.0_file2.txt
 
 test/rr_ts1.0_dir:
 total 0
-drwxr-xr-x  2 stevens34  staff   64 Aug  2 09:34 .
-drwxr-xr-x  8 stevens34  staff  256 Aug  2 09:34 ..
+drwxr-xr-x  2 stevens34  staff   64 Aug  2 10:09 .
+drwxr-xr-x  8 stevens34  staff  256 Aug  2 10:09 ..
 Process 4 completed (Total time: 0.4s)
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 1.0' > test/rr_ts1.0_file2.txt
-  Simulating execution time: 0.48s
-  Command executed successfully in 0.50s
+  Simulating execution time: 0.49s
+  Command executed successfully in 0.51s
 Process 2 completed (Total time: 1.5s)
 Running process 3 for 1.0s (Round-Robin)
   Command: mkdir test/rr_ts1.0_dir
@@ -156,7 +156,7 @@ Running process 3 for 1.0s (Round-Robin)
   Simulating execution time: 1.00s
   Command failed: mkdir: test/rr_ts1.0_dir: File exists
 
-Running process 3 for 0.9s (Round-Robin)
+Running process 3 for 1.0s (Round-Robin)
   Command: mkdir test/rr_ts1.0_dir
   Simulating execution time: 0.95s
   Command failed: mkdir: test/rr_ts1.0_dir: File exists
@@ -197,22 +197,22 @@ Process 2 completed (Total time: 1.5s)
 Running process 3 for 2.0s (Round-Robin)
   Command: mkdir test/rr_ts2.0_dir
   Simulating execution time: 2.00s
-  Command executed successfully in 2.02s
+  Command executed successfully in 2.01s
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts2.0_*
   Simulating execution time: 0.40s
-  Command executed successfully in 0.41s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts2.0_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts2.0_file2.txt
+  Command executed successfully in 0.42s
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 10:09 test/rr_ts2.0_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 10:09 test/rr_ts2.0_file2.txt
 
 test/rr_ts2.0_dir:
 total 0
-drwxr-xr-x   2 stevens34  staff   64 Aug  2 09:34 .
-drwxr-xr-x  11 stevens34  staff  352 Aug  2 09:34 ..
+drwxr-xr-x   2 stevens34  staff   64 Aug  2 10:09 .
+drwxr-xr-x  11 stevens34  staff  352 Aug  2 10:09 ..
 Process 4 completed (Total time: 0.4s)
 Running process 3 for 2.0s (Round-Robin)
   Command: mkdir test/rr_ts2.0_dir
-  Simulating execution time: 1.98s
+  Simulating execution time: 1.99s
   Command failed: mkdir: test/rr_ts2.0_dir: File exists
 
 Process 3 completed (Total time: 4.0s)
@@ -237,25 +237,86 @@ Jobs added to Priority scheduler:
   Process 4: 'touch file' (Priority 1, 0.5s) - Should run after first high priority
 Expected behavior: Jobs run in priority order (1, 1, 5, 10) with time simulation
 Starting scheduler...
-Running process 1 (Priority: 1)
+Running process 1 (Priority: 1) for 0.1s
   Command: echo 'High priority - quick job' > test/priority_high_quick.txt
-  Simulating execution time: 0.30s
-  Command executed successfully in 0.32s
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 1) for 0.1s
+  Command: echo 'High priority - quick job' > test/priority_high_quick.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 1) for 0.1s
+  Command: echo 'High priority - quick job' > test/priority_high_quick.txt
+  Simulating execution time: 0.07s
+  Command executed successfully in 0.09s
 Process 1 completed (Total time: 0.3s)
-Running process 4 (Priority: 1)
+Running process 4 (Priority: 1) for 0.1s
   Command: touch test/priority_high_medium.txt
-  Simulating execution time: 0.50s
-  Command executed successfully in 0.52s
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 4 (Priority: 1) for 0.1s
+  Command: touch test/priority_high_medium.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 4 (Priority: 1) for 0.1s
+  Command: touch test/priority_high_medium.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 4 (Priority: 1) for 0.1s
+  Command: touch test/priority_high_medium.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 4 (Priority: 1) for 0.0s
+  Command: touch test/priority_high_medium.txt
+  Simulating execution time: 0.02s
+  Command executed successfully in 0.03s
 Process 4 completed (Total time: 0.5s)
-Running process 2 (Priority: 5)
+Running process 2 (Priority: 5) for 0.1s
   Command: mkdir test/priority_medium_dir
-  Simulating execution time: 0.20s
-  Command executed successfully in 0.22s
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 2 (Priority: 5) for 0.1s
+  Command: mkdir test/priority_medium_dir
+  Simulating execution time: 0.09s
+  Command failed: mkdir: test/priority_medium_dir: File exists
+
 Process 2 completed (Total time: 0.2s)
-Running process 3 (Priority: 10)
+Running process 3 (Priority: 10) for 0.1s
   Command: echo 'Low priority - longer job' > test/priority_low_long.txt
-  Simulating execution time: 1.00s
-  Command executed successfully in 1.01s
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 3 (Priority: 10) for 0.1s
+  Command: echo 'Low priority - longer job' > test/priority_low_long.txt
+  Simulating execution time: 0.07s
+  Command executed successfully in 0.09s
 Process 3 completed (Total time: 1.0s)
 Priority test completed
 Checking created files:
@@ -268,25 +329,179 @@ Checking created files:
 
 === Testing Priority Preemption with Time Simulation ===
 Scheduler set to priority
-Added process 1 (Priority: 10, Time needed: 2.0s)
+Added process 1 (Priority: 10, Time needed: 4.0s)
 Scheduler started
 Added low priority job:
   Process 1: 'echo low priority job' (Priority 10, 2.0s) - Should be preempted
 Starting scheduler...
-Running process 1 (Priority: 10)
+Running process 1 (Priority: 10) for 0.1s
   Command: echo 'Low priority job running' > test/preempt_low_priority.txt
-  Simulating execution time: 2.00s
-  Command executed successfully in 2.01s
-Process 1 completed (Total time: 2.0s)
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
 Added process 2 (Priority: 1, Time needed: 0.5s)
 Added high priority job after 0.5s:
   Process 2: 'echo high priority job' (Priority 1, 0.5s) - Should preempt low priority
 Expected behavior: High priority job should preempt low priority job immediately
-Running process 2 (Priority: 1)
+Preempting process 1 for higher priority process 2
+Running process 2 (Priority: 1) for 0.1s
   Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
-  Simulating execution time: 0.50s
-  Command executed successfully in 0.51s
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 2 (Priority: 1) for 0.1s
+  Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 2 (Priority: 1) for 0.1s
+  Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 2 (Priority: 1) for 0.1s
+  Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 2 (Priority: 1) for 0.0s
+  Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
+  Simulating execution time: 0.04s
+  Command executed successfully in 0.05s
 Process 2 completed (Total time: 0.5s)
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.11s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.10s
+  Command executed successfully in 0.12s
+Running process 1 (Priority: 10) for 0.1s
+  Command: echo 'Low priority job running' > test/preempt_low_priority.txt
+  Simulating execution time: 0.06s
+  Command executed successfully in 0.07s
+Process 1 completed (Total time: 4.0s)
+Process 1 completed (Total time: 4.0s)
 Preemption test completed
 Checking created files:
   ✓ test/preempt_high_priority.txt created

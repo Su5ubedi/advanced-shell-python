@@ -184,7 +184,7 @@ def test_preemption_with_time_simulation():
     
     # Add a low priority job first that takes longer
     low_priority_job = DummyJob(1, f"echo 'Low priority job running' > {test_dir}/preempt_low_priority.txt")
-    scheduler.add_process(low_priority_job, priority=10, time_needed=2.0)
+    scheduler.add_process(low_priority_job, priority=10, time_needed=4.0)
     
     print("Added low priority job:")
     print(f"  Process 1: 'echo low priority job' (Priority 10, 2.0s) - Should be preempted")

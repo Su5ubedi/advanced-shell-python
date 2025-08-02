@@ -1,0 +1,24 @@
+apple
+banana
+Error: validation error
+Error: pipe error
+cherry
+Error: authentication required
+Error: no such file or directory
+Error: too many arguments
+Error: missing filename
+date
+fig
+grape
+honey
+Error: permission denied
+Error: invalid option
+Error: process not found
+Error: scheduler error
+invalid command
+kiwi
+lemon
+mango
+Error: Parse error: invalid syntax
+Error: command not found
+Error: shell error

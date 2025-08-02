@@ -20,10 +20,23 @@ A custom shell implementation in Python that simulates Unix-like Operating Syste
 - **help** - Show available commands
 
 ### Process Management & Job Control
-- **jobs** - List background jobs
+- **External command execution** - Run any system command
+- **Foreground execution** - Commands run in foreground by default
+- **Background execution** - Add `&` to run commands in background
+- **jobs** - List all background jobs with status
 - **fg [job_id]** - Bring background job to foreground
 - **bg [job_id]** - Resume stopped job in background
-- Signal handling and error management
+- **stop [job_id]** - Stop a running job (equivalent to Ctrl+Z)
+- **Signal handling** - Proper handling of SIGINT, SIGCHLD
+- **Process groups** - Support for process group management
+- **Error management** - Comprehensive error handling
+
+### Keyboard Navigation
+- **Arrow Keys** - Navigate cursor left and right in command line
+- **Ctrl+C** - Clear current command line (when typing)
+- **Ctrl+C** - Interrupt current foreground process (when running)
+- **Backspace** - Delete character to the left of cursor
+- **Ctrl+D** - Exit shell (EOF)
 
 ## Project Structure
 
@@ -34,7 +47,8 @@ advanced-shell/
 ├── command_handler.py   # Built-in command implementations
 ├── command_parser.py    # Command parsing and validation
 ├── job_manager.py       # Job control operations
-├── shell_types.py             # Data types and enums
+├── input_handler.py     # Enhanced input with keyboard navigation
+├── shell_types.py       # Data types and enums
 └── README.md           # Documentation
 ```
 

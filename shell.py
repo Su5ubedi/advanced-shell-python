@@ -12,6 +12,7 @@ from job_manager import JobManager
 from command_handler import CommandHandler
 from command_parser import CommandParser
 from shell_types import ParsedCommand
+from input_handler import InputHandler
 
 
 class Shell:
@@ -21,6 +22,7 @@ class Shell:
         self.job_manager = JobManager()
         self.command_handler = CommandHandler(self.job_manager)
         self.parser = CommandParser()
+        self.input_handler = InputHandler()
         self.running = True
         self.prompt = "[shell]$ "
         self.setup_signal_handlers()
@@ -42,7 +44,7 @@ class Shell:
                 self.display_prompt()
 
                 try:
-                    user_input = input().strip()
+                    user_input = self.input_handler.get_input(self.prompt).strip()
                 except EOFError:
                     # Handle Ctrl+D
                     print("\nGoodbye!")
@@ -161,8 +163,7 @@ class Shell:
 
         # Get current time for enhanced prompt
         current_time = time.strftime("%H:%M:%S")
-        prompt = f"[shell:{dir_name} {current_time}]$ "
-        print(prompt, end='', flush=True)
+        self.prompt = f"[shell:{dir_name} {current_time}]$ "
 
     def print_welcome(self) -> None:
         """Print the welcome message"""
@@ -172,8 +173,10 @@ class Shell:
         print()
         print("Features implemented:")
         print("✓ Built-in commands (cd, pwd, ls, cat, etc.)")
+        print("✓ External command execution")
         print("✓ Process management (foreground/background)")
-        print("✓ Job control (jobs, fg, bg)")
+        print("✓ Job control (jobs, fg, bg, stop)")
+        print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")
         print()

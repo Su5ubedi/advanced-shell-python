@@ -99,8 +99,58 @@ class Shell:
             except Exception as e:
                 raise ValueError(f"{parsed.command}: {e}")
         else:
-            # Only built-in commands are supported
-            raise ValueError(f"{parsed.command}: command not found (only built-in commands are supported)")
+            # Try to execute as external command
+            self.execute_external_command(parsed)
+
+    def execute_external_command(self, parsed: ParsedCommand) -> None:
+        """Execute external command"""
+        # Check if external command exists
+        import shutil
+        if not shutil.which(parsed.command):
+            raise ValueError(f"{parsed.command}: command not found")
+
+        try:
+            if parsed.background:
+                # Background execution
+                process = subprocess.Popen(
+                    parsed.args,
+                    cwd=os.getcwd(),
+                    preexec_fn=os.setsid  # Create new process group
+                )
+
+                job = self.job_manager.add_job(
+                    command=' '.join(parsed.args),
+                    args=parsed.args,
+                    process=process,
+                    background=True
+                )
+
+                print(f"[{job.id}] {process.pid}")
+
+            else:
+                # Foreground execution
+                process = subprocess.Popen(
+                    parsed.args,
+                    cwd=os.getcwd()
+                )
+
+                try:
+                    process.wait()
+                except KeyboardInterrupt:
+                    # Forward Ctrl+C to child process
+                    process.terminate()
+                    try:
+                        process.wait(timeout=1)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                    print("\n^C")
+
+        except FileNotFoundError:
+            raise ValueError(f"{parsed.command}: command not found")
+        except PermissionError:
+            raise ValueError(f"{parsed.command}: permission denied")
+        except Exception as e:
+            raise ValueError(f"Error executing {parsed.command}: {e}")
 
     def display_prompt(self) -> None:
         """Show the shell prompt"""

@@ -28,7 +28,7 @@ class CommandHandler:
 
         command_map = {
             'cd': self.handle_cd,
-            '`pwd': self.handle_pwd,
+            'pwd': self.handle_pwd,
             'exit': self.handle_exit,
             'echo': self.handle_echo,
             'clear': self.handle_clear,

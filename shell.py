@@ -168,7 +168,7 @@ class Shell:
     def print_welcome(self) -> None:
         """Print the welcome message"""
         print("==========================================")
-        print("  Advanced Shell Simulation - Deliverable 1")
+        print("  Advanced Shell Simulation - Deliverable 2")
         print("==========================================")
         print()
         print("Features implemented:")
@@ -176,6 +176,9 @@ class Shell:
         print("✓ External command execution")
         print("✓ Process management (foreground/background)")
         print("✓ Job control (jobs, fg, bg, stop)")
+        print("✓ Round-Robin scheduling with configurable time slices")
+        print("✓ Priority-based scheduling with preemption")
+        print("✓ Process simulation using timers")
         print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")

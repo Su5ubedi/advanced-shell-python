@@ -15,6 +15,7 @@ class JobStatus(Enum):
     RUNNING = "Running"
     STOPPED = "Stopped"
     DONE = "Done"
+    WAITING = "Waiting"  # New status for scheduling
 
 
 @dataclass
@@ -29,6 +30,10 @@ class Job:
     start_time: float
     end_time: Optional[float] = None
     background: bool = True
+    priority: int = 5  # Default priority (1=highest, 10=lowest)
+    execution_time: float = 0.0  # Time spent executing
+    total_time_needed: float = 0.0  # Total time needed for completion
+    time_slice_remaining: float = 0.0  # Remaining time slice for Round-Robin
 
     def is_alive(self) -> bool:
         """Check if the process is still running"""

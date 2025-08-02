@@ -44,7 +44,10 @@ class CommandHandler:
             'fg': self.handle_fg,
             'bg': self.handle_bg,
             'stop': self.handle_stop,  # Temporary for testing bg command
-            'help': self.handle_help
+            'help': self.handle_help,
+            'schedule': self.handle_schedule,
+            'scheduler': self.handle_scheduler,
+            'addjob': self.handle_addjob
         }
 
         handler = command_map.get(parsed.command)
@@ -494,6 +497,11 @@ class CommandHandler:
         print("  fg [job_id]       - Bring job to foreground")
         print("  bg [job_id]       - Resume job in background")
         print()
+        print("Process Scheduling:")
+        print("  schedule <cmd> [priority] [time] - Add job to scheduler")
+        print("  scheduler [round_robin|priority] [time_slice] - Configure scheduler")
+        print("  addjob <cmd> [priority] [time] [background] - Add job with parameters")
+        print()
         print("Usage:")
         print("  command &         - Run command in background")
         print("  Ctrl+C            - Interrupt current foreground process")
@@ -510,11 +518,145 @@ class CommandHandler:
         print("  fg 1")
         print("  cat file1.txt file2.txt")
         print("  echo \"Hello\\nWorld\"")
+        print("  schedule task1 3 10")
+        print("  scheduler round_robin 2.5")
+        print("  addjob task2 1 5.0 true")
+        print()
+        print("Scheduling Algorithms:")
+        print("  Round-Robin: Each process gets a time slice, then moves to end of queue")
+        print("  Priority: Highest priority process runs first (1=highest, 10=lowest)")
         print()
         print("Advanced Features (Future Deliverables):")
-        print("  - Process scheduling algorithms")
         print("  - Memory management simulation")
         print("  - Process synchronization")
         print("  - Command piping")
         print("  - User authentication and file permissions")
         print()
+
+    def handle_schedule(self, args: List[str]) -> None:
+        """Schedule command - add a job to the scheduler"""
+        if len(args) < 2:
+            raise ValueError("schedule: missing command\nUsage: schedule <command> [priority] [time_needed]")
+        
+        command = args[1]
+        priority = 5  # Default priority
+        time_needed = 5.0  # Default time needed
+        
+        # Parse optional arguments
+        if len(args) >= 3:
+            try:
+                priority = int(args[2])
+                if priority < 1 or priority > 10:
+                    raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
+            except ValueError:
+                raise ValueError(f"Invalid priority: {args[2]}")
+        
+        if len(args) >= 4:
+            try:
+                time_needed = float(args[3])
+                if time_needed <= 0:
+                    raise ValueError("Time needed must be positive")
+            except ValueError:
+                raise ValueError(f"Invalid time: {args[3]}")
+        
+        # Create a scheduled job
+        job = self.job_manager.add_scheduled_job(
+            command=command,
+            args=[command],  # Simple command without arguments for now
+            priority=priority,
+            time_needed=time_needed
+        )
+        
+        print(f"Scheduled job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s)")
+
+    def handle_scheduler(self, args: List[str]) -> None:
+        """Scheduler command - configure and view scheduler status"""
+        if len(args) < 2:
+            # Show current scheduler status
+            status = self.job_manager.get_scheduler_status()
+            print("Scheduler Status:")
+            print(f"  Algorithm: {status['algorithm']}")
+            if status['time_slice']:
+                print(f"  Time Slice: {status['time_slice']}s")
+            print(f"  Total Processes: {status['total_processes']}")
+            if status['running_process']:
+                print(f"  Running Process: {status['running_process']}")
+            else:
+                print("  Running Process: None")
+            
+            if status['processes']:
+                print("\nQueued Processes:")
+                for proc in status['processes']:
+                    print(f"  [{proc['id']}] Priority: {proc['priority']}, "
+                          f"Time: {proc['time_executed']:.1f}/{proc['time_needed']:.1f}s, "
+                          f"Status: {proc['status']}")
+            return
+        
+        subcommand = args[1].lower()
+        
+        if subcommand == "round_robin":
+            time_slice = 2.0  # Default
+            if len(args) >= 3:
+                try:
+                    time_slice = float(args[2])
+                    if time_slice <= 0:
+                        raise ValueError("Time slice must be positive")
+                except ValueError:
+                    raise ValueError(f"Invalid time slice: {args[2]}")
+            
+            self.job_manager.set_scheduling_algorithm("round_robin", time_slice)
+            
+        elif subcommand == "priority":
+            self.job_manager.set_scheduling_algorithm("priority")
+            
+        else:
+            raise ValueError(f"Unknown scheduler subcommand: {subcommand}\n"
+                           "Available: round_robin [time_slice], priority")
+
+    def handle_addjob(self, args: List[str]) -> None:
+        """Addjob command - add a job with specific parameters"""
+        if len(args) < 2:
+            raise ValueError("addjob: missing command\n"
+                           "Usage: addjob <command> [priority] [time_needed] [background]")
+        
+        command = args[1]
+        priority = 5
+        time_needed = 5.0
+        background = True
+        
+        # Parse optional arguments
+        if len(args) >= 3:
+            try:
+                priority = int(args[2])
+                if priority < 1 or priority > 10:
+                    raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
+            except ValueError:
+                raise ValueError(f"Invalid priority: {args[2]}")
+        
+        if len(args) >= 4:
+            try:
+                time_needed = float(args[3])
+                if time_needed <= 0:
+                    raise ValueError("Time needed must be positive")
+            except ValueError:
+                raise ValueError(f"Invalid time: {args[3]}")
+        
+        if len(args) >= 5:
+            bg_str = args[4].lower()
+            if bg_str in ['true', '1', 'yes']:
+                background = True
+            elif bg_str in ['false', '0', 'no']:
+                background = False
+            else:
+                raise ValueError(f"Invalid background value: {args[4]}")
+        
+        # Create a scheduled job
+        job = self.job_manager.add_scheduled_job(
+            command=command,
+            args=[command],
+            priority=priority,
+            time_needed=time_needed,
+            background=background
+        )
+        
+        print(f"Added job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s, Background: {background})")

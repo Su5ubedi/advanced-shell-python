@@ -11,7 +11,7 @@ from shell import Shell
 def show_version():
     """Show version information"""
     print("Advanced Shell Simulation")
-    print("Version: 1.0.0 (Deliverable 1)")
+    print("Version: 2.0.0 (Deliverable 2)")
     print("Build: Development")
     print()
     print("Features:")
@@ -19,6 +19,9 @@ def show_version():
     print("- Built-in commands")
     print("- Process management")
     print("- Job control")
+    print("- Round-Robin scheduling")
+    print("- Priority-based scheduling")
+    print("- Process simulation with timers")
 
 
 def show_help():
@@ -39,7 +42,7 @@ def show_help():
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="Advanced Shell Simulation - Deliverable 1",
+        description="Advanced Shell Simulation - Deliverable 2",
         add_help=False  # We'll handle help ourselves
     )
 

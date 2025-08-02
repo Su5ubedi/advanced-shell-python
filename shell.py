@@ -13,6 +13,7 @@ from command_handler import CommandHandler
 from command_parser import CommandParser
 from shell_types import ParsedCommand
 from input_handler import InputHandler
+from auth_system import Permission
 
 
 class Shell:
@@ -38,6 +39,10 @@ class Shell:
     def run(self):
         """Start the main shell loop"""
         self.print_welcome()
+        
+        # Require login before starting shell
+        if not self.command_handler.auth_system.is_authenticated():
+            self.handle_initial_login()
 
         while self.running:
             try:
@@ -76,6 +81,40 @@ class Shell:
 
         self.shutdown()
 
+    def handle_initial_login(self):
+        """Handle initial login before starting shell"""
+        print("Welcome to Advanced Shell Simulation - Deliverable 3")
+        print("You must log in to continue.")
+        print()
+        print("Available users:")
+        print("  admin/admin123    - Administrator (full access)")
+        print("  user/user123      - Standard user (limited access)")
+        print("  guest/guest123    - Guest user (very limited access)")
+        print()
+
+        while not self.command_handler.auth_system.is_authenticated():
+            try:
+                username = input("Username: ").strip()
+                if not username:
+                    continue
+                
+                password = input("Password: ").strip()
+                if not password:
+                    continue
+
+                if self.command_handler.auth_system.authenticate(username, password):
+                    user = self.command_handler.auth_system.get_current_user()
+                    print(f"\nWelcome, {user.username}! Role: {user.role.value}")
+                    break
+                else:
+                    print("Login failed: Invalid username or password")
+            except KeyboardInterrupt:
+                print("\nGoodbye!")
+                sys.exit(0)
+            except EOFError:
+                print("\nGoodbye!")
+                sys.exit(0)
+
     def process_input(self, input_str: str) -> None:
         """Process a single line of input"""
         # Parse the command
@@ -93,6 +132,16 @@ class Shell:
         except ValueError as e:
             raise ValueError(f"Validation error: {e}")
 
+        # Handle piped commands
+        if parsed.has_pipes:
+            try:
+                result = self.command_handler.handle_pipe_command(parsed)
+                if result:
+                    print(result, end='')
+            except Exception as e:
+                raise ValueError(f"Pipe error: {e}")
+            return
+
         # Check if it's a built-in command
         if self.parser.is_builtin_command(parsed.command):
             try:
@@ -106,11 +155,20 @@ class Shell:
             self.execute_external_command(parsed)
 
     def execute_external_command(self, parsed: ParsedCommand) -> None:
-        """Execute external command"""
+        """Execute external command with permission checking"""
         # Check if external command exists
         import shutil
         if not shutil.which(parsed.command):
             raise ValueError(f"{parsed.command}: command not found")
+
+        # Check permissions for command execution
+        if not self.command_handler.auth_system.is_authenticated():
+            raise ValueError("Authentication required to execute commands")
+
+        # Check if user has execute permission for the command
+        command_path = shutil.which(parsed.command)
+        if command_path and not self.command_handler.check_file_permission(command_path, Permission.EXECUTE):
+            raise PermissionError(f"{parsed.command}: permission denied")
 
         try:
             if parsed.background:
@@ -156,7 +214,7 @@ class Shell:
             raise ValueError(f"Error executing {parsed.command}: {e}")
 
     def display_prompt(self) -> None:
-        """Show the shell prompt"""
+        """Show the shell prompt with user information"""
         try:
             pwd = os.getcwd()
             dir_name = os.path.basename(pwd)
@@ -167,12 +225,18 @@ class Shell:
 
         # Get current time for enhanced prompt
         current_time = time.strftime("%H:%M:%S")
-        self.prompt = f"[shell:{dir_name} {current_time}]$ "
+        
+        # Add user information to prompt
+        if self.command_handler.auth_system.is_authenticated():
+            user = self.command_handler.auth_system.get_current_user()
+            self.prompt = f"[{user.username}:{user.role.value}:{dir_name} {current_time}]$ "
+        else:
+            self.prompt = f"[shell:{dir_name} {current_time}]$ "
 
     def print_welcome(self) -> None:
         """Print the welcome message"""
         print("==========================================")
-        print("  Advanced Shell Simulation - Deliverable 2")
+        print("  Advanced Shell Simulation - Deliverable 3")
         print("==========================================")
         print()
         print("Features implemented:")
@@ -186,13 +250,33 @@ class Shell:
         print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")
-        print("✓ Process scheduling algorithms (NEW)")
+        print("✓ Process scheduling algorithms")
         print("  • Round-Robin Scheduling")
         print("  • Priority-Based Scheduling")
-        print("✓ Performance metrics and monitoring (NEW)")
+        print("✓ Performance metrics and monitoring")
+        print("✓ Command piping and redirection (NEW)")
+        print("✓ User authentication system (NEW)")
+        print("✓ File permissions and access control (NEW)")
+        print("✓ READ-ONLY access for standard users (UPDATED)")
         print()
         print("Type 'help' for available commands")
         print("Type 'exit' to quit")
+        print()
+        print("Quick Start - Authentication:")
+        print("  login admin admin123    # Login as administrator (full access)")
+        print("  login user user123      # Login as standard user (read-only)")
+        print("  login guest guest123    # Login as guest (very limited)")
+        print("  whoami                  # Show current user")
+        print("  logout                  # Logout current user")
+        print()
+        print("Quick Start - File Permissions:")
+        print("  permissions file.txt    # Check file permissions")
+        print("  ls -l                   # List with permission details")
+        print()
+        print("Quick Start - Piping:")
+        print("  ls | grep txt           # List files containing 'txt'")
+        print("  cat file.txt | sort     # Display sorted file contents")
+        print("  ls | grep .py | wc -l   # Count Python files")
         print()
         print("Quick Start - Process Scheduling:")
         print("  scheduler config rr 2         # Configure Round-Robin")
@@ -200,10 +284,17 @@ class Shell:
         print("  scheduler start               # Start scheduling")
         print("  scheduler status              # Monitor execution")
         print()
+        print("IMPORTANT: Standard and Guest users have READ-ONLY access")
+        print("to most directories. Only Admin can create/modify files.")
+        print()
 
     def shutdown(self) -> None:
         """Perform cleanup before exiting"""
         print("\nShutting down shell...")
+
+        # Cleanup pipe handler
+        if hasattr(self.command_handler, 'pipe_handler'):
+            self.command_handler.pipe_handler.cleanup()
 
         # Stop scheduler if available
         if hasattr(self.command_handler, 'process_scheduler') and self.command_handler.process_scheduler:

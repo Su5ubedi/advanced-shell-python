@@ -11,7 +11,7 @@ from shell import Shell
 def show_version():
     """Show version information"""
     print("Advanced Shell Simulation")
-    print("Version: 2.0.0 (Deliverable 2)")
+    print("Version: 3.0.0 (Deliverable 3)")
     print("Build: Development")
     print()
     print("Features:")
@@ -24,11 +24,14 @@ def show_version():
     print("  * Priority-Based Scheduling")
     print("- Performance metrics")
     print("- Real-time process monitoring")
+    print("- Command piping and redirection (Deliverable 3)")
+    print("- User authentication system")
+    print("- File permissions and access control")
 
 
 def show_help():
     """Show help information"""
-    print("Advanced Shell Simulation - Deliverable 2")
+    print("Advanced Shell Simulation - Deliverable 3")
     print()
     print("Usage:")
     print("  python3 main.py [options]")
@@ -38,7 +41,23 @@ def show_help():
     print("  --help       Show this help message")
     print("  --debug      Enable debug mode")
     print()
-    print("Once started, type 'help' for available shell commands")
+    print("Once started, you will be prompted to log in.")
+    print("Available users:")
+    print("  admin/admin123    - Administrator (full access)")
+    print("  user/user123      - Standard user (limited access)")
+    print("  guest/guest123    - Guest user (very limited access)")
+    print()
+    print("Type 'help' for available shell commands")
+    print()
+    print("Quick Start - Authentication:")
+    print("  login admin admin123    # Login as administrator")
+    print("  whoami                  # Show current user")
+    print("  logout                  # Logout current user")
+    print()
+    print("Quick Start - Piping:")
+    print("  ls | grep txt           # List files containing 'txt'")
+    print("  cat file.txt | sort     # Display sorted file contents")
+    print("  ls | grep .py | wc -l   # Count Python files")
     print()
     print("Quick Start - Process Scheduling:")
     print("  1. Configure algorithm:    scheduler config rr 2")
@@ -51,7 +70,7 @@ def show_help():
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description="Advanced Shell Simulation - Deliverable 2",
+        description="Advanced Shell Simulation - Deliverable 3",
         add_help=False  # We'll handle help ourselves
     )
 
@@ -90,6 +109,8 @@ def main():
         if args.debug:
             print("Debug mode enabled")
             print("Scheduler modules available:", hasattr(shell.command_handler, 'process_scheduler'))
+            print("Auth system available:", hasattr(shell.command_handler, 'auth_system'))
+            print("Pipe handler available:", hasattr(shell.command_handler, 'pipe_handler'))
             # Additional debug setup could go here
 
         # Run the shell

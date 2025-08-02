@@ -108,7 +108,6 @@ class CommandHandler:
         jobs = self.job_manager.get_all_jobs()
         for job in jobs:
             if job.status.value != "Done":
-                print(f"Terminating job [{job.id}]: {job.command}")
                 self.job_manager.kill_job(job.id)
 
         sys.exit(0)

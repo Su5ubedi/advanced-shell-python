@@ -175,7 +175,7 @@ class Shell:
         print("✓ Built-in commands (cd, pwd, ls, cat, etc.)")
         print("✓ External command execution")
         print("✓ Process management (foreground/background)")
-        print("✓ Job control (jobs, fg, bg, stop)")
+        print("✓ Job control (jobs, fg, bg)")
         print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")

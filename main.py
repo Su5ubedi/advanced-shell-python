@@ -15,21 +15,23 @@ def show_version():
     print("Build: Development")
     print()
     print("Features:")
-    print("- Basic shell functionality")
+    print("- Basic shell functionality (Deliverable 1)")
     print("- Built-in commands")
     print("- Process management")
     print("- Job control")
-    print("- Round-Robin scheduling")
-    print("- Priority-based scheduling")
-    print("- Process simulation with timers")
+    print("- Process scheduling algorithms (Deliverable 2)")
+    print("  * Round-Robin Scheduling")
+    print("  * Priority-Based Scheduling")
+    print("- Performance metrics")
+    print("- Real-time process monitoring")
 
 
 def show_help():
     """Show help information"""
-    print("Advanced Shell Simulation")
+    print("Advanced Shell Simulation - Deliverable 2")
     print()
     print("Usage:")
-    print("  python main.py [options]")
+    print("  python3 main.py [options]")
     print()
     print("Options:")
     print("  --version    Show version information")
@@ -37,6 +39,13 @@ def show_help():
     print("  --debug      Enable debug mode")
     print()
     print("Once started, type 'help' for available shell commands")
+    print()
+    print("Quick Start - Process Scheduling:")
+    print("  1. Configure algorithm:    scheduler config rr 2")
+    print("  2. Add processes:          scheduler addprocess task1 5")
+    print("  3. Start scheduler:        scheduler start")
+    print("  4. Monitor status:         scheduler status")
+    print("  5. View metrics:           scheduler metrics")
 
 
 def main():
@@ -80,6 +89,7 @@ def main():
 
         if args.debug:
             print("Debug mode enabled")
+            print("Scheduler modules available:", hasattr(shell.command_handler, 'process_scheduler'))
             # Additional debug setup could go here
 
         # Run the shell
@@ -90,6 +100,9 @@ def main():
         sys.exit(1)
     except Exception as e:
         print(f"Fatal error: {e}")
+        if args.debug:
+            import traceback
+            traceback.print_exc()
         sys.exit(1)
 
 

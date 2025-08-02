@@ -44,7 +44,11 @@ class Shell:
                 self.display_prompt()
 
                 try:
-                    user_input = self.input_handler.get_input(self.prompt).strip()
+                    # Use input handler if available, otherwise fallback to input()
+                    if self.input_handler:
+                        user_input = self.input_handler.get_input(self.prompt).strip()
+                    else:
+                        user_input = input().strip()
                 except EOFError:
                     # Handle Ctrl+D
                     print("\nGoodbye!")
@@ -182,14 +186,29 @@ class Shell:
         print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")
+        print("✓ Process scheduling algorithms (NEW)")
+        print("  • Round-Robin Scheduling")
+        print("  • Priority-Based Scheduling")
+        print("✓ Performance metrics and monitoring (NEW)")
         print()
         print("Type 'help' for available commands")
         print("Type 'exit' to quit")
+        print()
+        print("Quick Start - Process Scheduling:")
+        print("  scheduler config rr 2         # Configure Round-Robin")
+        print("  scheduler addprocess task1 5  # Add 5-second process")
+        print("  scheduler start               # Start scheduling")
+        print("  scheduler status              # Monitor execution")
         print()
 
     def shutdown(self) -> None:
         """Perform cleanup before exiting"""
         print("\nShutting down shell...")
+
+        # Stop scheduler if available
+        if hasattr(self.command_handler, 'process_scheduler') and self.command_handler.process_scheduler:
+            print("Stopping process scheduler...")
+            self.command_handler.process_scheduler.stop_scheduler()
 
         # Get all active jobs
         jobs = self.job_manager.get_all_jobs()

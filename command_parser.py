@@ -13,9 +13,12 @@ class CommandParser:
     """Handles parsing of command line input"""
 
     BUILTIN_COMMANDS = {
+        # Deliverable 1: Basic shell commands
         'cd', 'pwd', 'exit', 'echo', 'clear', 'ls', 'cat',
         'mkdir', 'rmdir', 'rm', 'touch', 'kill', 'jobs',
-        'fg', 'bg', 'stop', 'help', 'schedule', 'scheduler', 'addjob'
+        'fg', 'bg', 'stop', 'help',
+        # Deliverable 2: Unified process scheduling command
+        'scheduler'
     }
 
     def parse(self, input_str: str) -> Optional[ParsedCommand]:

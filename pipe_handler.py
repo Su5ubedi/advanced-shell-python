@@ -155,6 +155,78 @@ class PipeHandler:
 
     def _execute_pipe_chain(self, commands: List[PipeCommand]) -> str:
         """Execute a chain of piped commands"""
+        # Check if all commands are built-in
+        builtin_commands = ['cat', 'grep', 'sort', 'echo', 'ls', 'pwd', 'whoami']
+        
+        # For now, handle simple cases with built-in commands
+        if all(cmd.command in builtin_commands for cmd in commands):
+            return self._execute_builtin_pipe_chain(commands)
+        else:
+            # Fall back to subprocess for external commands
+            return self._execute_subprocess_pipe_chain(commands)
+
+    def _execute_builtin_pipe_chain(self, commands: List[PipeCommand]) -> str:
+        """Execute a chain of built-in commands"""
+        import io
+        from command_handler import CommandHandler
+        
+        # Create a temporary command handler for built-in commands
+        temp_handler = CommandHandler(None)  # We don't need job manager for this
+        
+        # Start with input data
+        current_input = ""
+        
+        # Execute each command in the chain
+        for i, cmd in enumerate(commands):
+            # For the first command, handle input file if specified
+            if i == 0 and cmd.input_file:
+                with open(cmd.input_file, 'r') as f:
+                    current_input = f.read()
+            
+            # Redirect stdin to our current input
+            import sys
+            old_stdin = sys.stdin
+            sys.stdin = io.StringIO(current_input)
+            
+            # Capture stdout
+            old_stdout = sys.stdout
+            output_buffer = io.StringIO()
+            sys.stdout = output_buffer
+            
+            try:
+                # Execute the built-in command
+                if cmd.command == 'cat':
+                    # For cat, we need to handle the case where it reads from a file
+                    # In a pipe like "cat file | grep pattern", cat should read from the file
+                    if i == 0 and len(cmd.args) > 1:
+                        # First command with file argument - read the file directly
+                        filename = cmd.args[1]
+                        with open(filename, 'r') as f:
+                            current_input = f.read()
+                    else:
+                        # Cat reading from stdin (shouldn't happen in normal pipes)
+                        temp_handler.handle_cat(cmd.args)
+                        current_input = output_buffer.getvalue()
+                        
+                elif cmd.command == 'grep':
+                    temp_handler.handle_grep(cmd.args)
+                    current_input = output_buffer.getvalue()
+                    
+                elif cmd.command == 'sort':
+                    temp_handler.handle_sort(cmd.args)
+                    current_input = output_buffer.getvalue()
+                    
+                # Add other built-in commands as needed
+                
+            finally:
+                # Restore stdin/stdout
+                sys.stdin = old_stdin
+                sys.stdout = old_stdout
+        
+        return current_input
+
+    def _execute_subprocess_pipe_chain(self, commands: List[PipeCommand]) -> str:
+        """Execute a chain of piped commands using subprocess"""
         processes = []
         pipes = []
         open_files = []

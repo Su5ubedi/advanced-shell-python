@@ -102,14 +102,13 @@ class CommandHandler:
 
     def handle_exit(self, args: List[str]) -> None:
         """Exit shell command"""
-        print("Goodbye!")
 
         # Clean shutdown - kill any remaining jobs
         jobs = self.job_manager.get_all_jobs()
         for job in jobs:
             if job.status.value != "Done":
                 self.job_manager.kill_job(job.id)
-
+        print("Goodbye!")
         sys.exit(0)
 
     def handle_echo(self, args: List[str]) -> None:

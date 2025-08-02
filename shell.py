@@ -7,7 +7,7 @@ import os
 import signal
 import subprocess
 import time
-
+import shutil
 from job_manager import JobManager
 from command_handler import CommandHandler
 from command_parser import CommandParser
@@ -108,18 +108,38 @@ class Shell:
     def execute_external_command(self, parsed: ParsedCommand) -> None:
         """Execute external command"""
         # Check if external command exists
-        import shutil
         if not shutil.which(parsed.command):
             raise ValueError(f"{parsed.command}: command not found")
 
         try:
+            # Determine preexec_fn for background processes
+            preexec_fn = None
+            creation_flags = 0
+
+            if parsed.background:
+                try:
+                    # Try Unix approach first
+                    preexec_fn = os.setsid
+                except AttributeError:
+                    # Windows doesn't have os.setsid, use creation flags instead
+                    creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
+
             if parsed.background:
                 # Background execution
-                process = subprocess.Popen(
-                    parsed.args,
-                    cwd=os.getcwd(),
-                    preexec_fn=os.setsid  # Create new process group
-                )
+                if creation_flags:
+                    # Windows
+                    process = subprocess.Popen(
+                        parsed.args,
+                        cwd=os.getcwd(),
+                        creationflags=creation_flags
+                    )
+                else:
+                    # Unix
+                    process = subprocess.Popen(
+                        parsed.args,
+                        cwd=os.getcwd(),
+                        preexec_fn=preexec_fn
+                    )
 
                 job = self.job_manager.add_job(
                     command=' '.join(parsed.args),

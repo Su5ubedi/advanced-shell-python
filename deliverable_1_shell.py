@@ -949,13 +949,34 @@ class Shell:
             raise ValueError(f"{parsed.command}: command not found")
 
         try:
+            # Determine preexec_fn for background processes
+            preexec_fn = None
+            creation_flags = 0
+
+            if parsed.background:
+                try:
+                    # Try Unix approach first
+                    preexec_fn = os.setsid
+                except AttributeError:
+                    # Windows doesn't have os.setsid, use creation flags instead
+                    creation_flags = subprocess.CREATE_NEW_PROCESS_GROUP
+
             if parsed.background:
                 # Background execution
-                process = subprocess.Popen(
-                    parsed.args,
-                    cwd=os.getcwd(),
-                    preexec_fn=os.setsid  # Create new process group
-                )
+                if creation_flags:
+                    # Windows
+                    process = subprocess.Popen(
+                        parsed.args,
+                        cwd=os.getcwd(),
+                        creationflags=creation_flags
+                    )
+                else:
+                    # Unix
+                    process = subprocess.Popen(
+                        parsed.args,
+                        cwd=os.getcwd(),
+                        preexec_fn=preexec_fn
+                    )
 
                 job = self.job_manager.add_job(
                     command=' '.join(parsed.args),

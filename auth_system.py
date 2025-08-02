@@ -142,7 +142,10 @@ class AuthenticationSystem:
                         'password_hash': user.password_hash,
                         'role': user.role.value,
                         'home_directory': user.home_directory,
-                        'permissions': user.permissions
+                        'permissions': {
+                            path: [perm.value for perm in perms] 
+                            for path, perms in user.permissions.items()
+                        }
                     }
                     for user in self.users.values()
                 ]

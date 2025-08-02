@@ -95,7 +95,7 @@ class PipeHandler:
             return self._execute_single_command(commands[0])
 
         # For multiple commands, use pipes
-        return self._execute_pipe_chain(commands)
+        return self._execute_pipe_chain(commands, auth_system)
 
     def _execute_single_command(self, cmd: PipeCommand) -> str:
         """Execute a single command"""
@@ -153,25 +153,29 @@ class PipeHandler:
         except PermissionError:
             raise PermissionError(f"{cmd.command}: permission denied")
 
-    def _execute_pipe_chain(self, commands: List[PipeCommand]) -> str:
+    def _execute_pipe_chain(self, commands: List[PipeCommand], auth_system=None) -> str:
         """Execute a chain of piped commands"""
         # Check if all commands are built-in
         builtin_commands = ['cat', 'grep', 'sort', 'echo', 'ls', 'pwd', 'whoami']
         
         # For now, handle simple cases with built-in commands
         if all(cmd.command in builtin_commands for cmd in commands):
-            return self._execute_builtin_pipe_chain(commands)
+            return self._execute_builtin_pipe_chain(commands, auth_system)
         else:
             # Fall back to subprocess for external commands
             return self._execute_subprocess_pipe_chain(commands)
 
-    def _execute_builtin_pipe_chain(self, commands: List[PipeCommand]) -> str:
+    def _execute_builtin_pipe_chain(self, commands: List[PipeCommand], auth_system=None) -> str:
         """Execute a chain of built-in commands"""
         import io
         from command_handler import CommandHandler
         
         # Create a temporary command handler for built-in commands
         temp_handler = CommandHandler(None)  # We don't need job manager for this
+        
+        # Set the authentication system to maintain user session
+        if auth_system:
+            temp_handler.auth_system = auth_system
         
         # Start with input data
         current_input = ""
@@ -195,7 +199,11 @@ class PipeHandler:
             
             try:
                 # Execute the built-in command
-                if cmd.command == 'cat':
+                if cmd.command == 'ls':
+                    temp_handler.handle_ls(cmd.args)
+                    current_input = output_buffer.getvalue()
+                    
+                elif cmd.command == 'cat':
                     # For cat, we need to handle the case where it reads from a file
                     # In a pipe like "cat file | grep pattern", cat should read from the file
                     if i == 0 and len(cmd.args) > 1:

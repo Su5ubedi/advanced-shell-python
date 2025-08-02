@@ -6,12 +6,9 @@ scheduler.py - Process scheduling algorithms for Advanced Shell Simulation
 import time
 import threading
 import subprocess
-import os
 from typing import List, Optional, Callable
 from enum import Enum
 from dataclasses import dataclass
-from queue import PriorityQueue
-import heapq
 
 from shell_types import Job, JobStatus
 
@@ -72,15 +69,15 @@ class Scheduler:
                 time_needed=time_needed,
                 time_slice_remaining=self.time_slice
             )
-            
+
             # Set job status to waiting
             job.status = JobStatus.WAITING
             job.priority = priority
             job.total_time_needed = time_needed
-            
+
             self.processes.append(process_info)
             print(f"Added process {job.id} (Priority: {priority}, Time needed: {time_needed}s)")
-            
+
             # If no process is running, start scheduling
             if not self.running_process and not self.running:
                 self.start_scheduler()
@@ -90,7 +87,7 @@ class Scheduler:
         with self.lock:
             # Remove from processes list
             self.processes = [p for p in self.processes if p.job.id != job_id]
-            
+
             # If it's the currently running process, stop it
             if self.running_process and self.running_process.job.id == job_id:
                 self.running_process.job.status = JobStatus.DONE
@@ -135,17 +132,17 @@ class Scheduler:
     def _execute_command(self, command: str, timeout: float) -> tuple[bool, str, float]:
         """
         Execute a shell command with timeout and sleep simulation
-        
+
         Returns:
             tuple: (success, output, execution_time)
         """
         try:
             start_time = time.time()
-            
+
             # Simulate process execution time with sleep
             print(f"  Simulating execution time: {timeout:.2f}s")
             time.sleep(timeout)
-            
+
             # Execute the actual command (but don't wait for it to complete)
             # We're simulating the time, so we just run it quickly
             result = subprocess.run(
@@ -155,14 +152,14 @@ class Scheduler:
                 text=True,
                 timeout=min(timeout, 1.0)  # Limit actual command execution to prevent blocking
             )
-            
+
             execution_time = time.time() - start_time
-            
+
             if result.returncode == 0:
                 return True, result.stdout, execution_time
             else:
                 return False, result.stderr, execution_time
-                
+
         except subprocess.TimeoutExpired:
             return False, f"Command timed out after {timeout} seconds", timeout
         except Exception as e:
@@ -176,11 +173,11 @@ class Scheduler:
         # Get the next process
         process = self.processes.pop(0)
         self.running_process = process
-        
+
         # Calculate how long to run this process
-        time_to_run = min(process.time_slice_remaining, 
+        time_to_run = min(process.time_slice_remaining,
                          process.time_needed - process.time_executed)
-        
+
         if time_to_run <= 0:
             # Process is complete
             self._complete_process(process)
@@ -190,21 +187,21 @@ class Scheduler:
         print(f"Running process {process.job.id} for {time_to_run:.1f}s (Round-Robin)")
         print(f"  Command: {process.job.command}")
         process.job.status = JobStatus.RUNNING
-        
+
         # Execute the actual command
         success, output, actual_time = self._execute_command(process.job.command, time_to_run)
-        
+
         if success:
             print(f"  Command executed successfully in {actual_time:.2f}s")
             if output.strip():
                 print(f"  Output: {output.strip()}")
         else:
             print(f"  Command failed: {output}")
-        
+
         # Update process state
         process.time_executed += actual_time
         process.time_slice_remaining = max(0, time_to_run - actual_time)
-        
+
         # Check if process is complete
         if process.time_executed >= process.time_needed:
             self._complete_process(process)
@@ -225,10 +222,10 @@ class Scheduler:
 
         # Sort processes by priority (highest priority first)
         self.processes.sort(key=lambda p: (p.priority, p.arrival_time))
-        
+
         # Get the highest priority process
         process = self.processes.pop(0)
-        
+
         # Check if we need to preempt the currently running process
         if self.running_process and process.priority < self.running_process.priority:
             print(f"Preempting process {self.running_process.job.id} for higher priority process {process.job.id}")
@@ -237,13 +234,13 @@ class Scheduler:
             self.processes.append(self.running_process)
             # Re-sort to maintain priority order
             self.processes.sort(key=lambda p: (p.priority, p.arrival_time))
-        
+
         self.running_process = process
-        
+
         # Run the process for a small time slice to allow preemption
         time_slice = 0.1  # Small time slice for preemptive scheduling
         time_to_run = min(time_slice, process.time_needed - process.time_executed)
-        
+
         if time_to_run <= 0:
             # Process is complete
             self._complete_process(process)
@@ -252,20 +249,20 @@ class Scheduler:
         print(f"Running process {process.job.id} (Priority: {process.priority}) for {time_to_run:.1f}s")
         print(f"  Command: {process.job.command}")
         process.job.status = JobStatus.RUNNING
-        
+
         # Execute the command for the time slice
         success, output, actual_time = self._execute_command(process.job.command, time_to_run)
-        
+
         if success:
             print(f"  Command executed successfully in {actual_time:.2f}s")
             if output.strip():
                 print(f"  Output: {output.strip()}")
         else:
             print(f"  Command failed: {output}")
-        
+
         # Update process state
         process.time_executed += actual_time
-        
+
         # Check if process is complete
         if process.time_executed >= process.time_needed:
             self._complete_process(process)
@@ -279,12 +276,12 @@ class Scheduler:
         process.job.status = JobStatus.DONE
         process.job.end_time = time.time()
         process.job.execution_time = process.time_executed
-        
+
         print(f"Process {process.job.id} completed (Total time: {process.time_executed:.1f}s)")
-        
+
         if self.on_process_complete:
             self.on_process_complete(process.job)
-        
+
         self.running_process = None
 
     def get_scheduler_status(self) -> dict:
@@ -315,4 +312,4 @@ class Scheduler:
                 self.running_process.job.status = JobStatus.WAITING
                 # Add back to the front of the queue for immediate rescheduling
                 self.processes.insert(0, self.running_process)
-                self.running_process = None 
+                self.running_process = None

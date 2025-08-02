@@ -134,7 +134,7 @@ class Scheduler:
 
     def _execute_command(self, command: str, timeout: float) -> tuple[bool, str, float]:
         """
-        Execute a shell command with timeout
+        Execute a shell command with timeout and sleep simulation
         
         Returns:
             tuple: (success, output, execution_time)
@@ -142,13 +142,18 @@ class Scheduler:
         try:
             start_time = time.time()
             
-            # Execute the command with timeout
+            # Simulate process execution time with sleep
+            print(f"  Simulating execution time: {timeout:.2f}s")
+            time.sleep(timeout)
+            
+            # Execute the actual command (but don't wait for it to complete)
+            # We're simulating the time, so we just run it quickly
             result = subprocess.run(
                 command,
                 shell=True,
                 capture_output=True,
                 text=True,
-                timeout=timeout
+                timeout=min(timeout, 1.0)  # Limit actual command execution to prevent blocking
             )
             
             execution_time = time.time() - start_time

@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 command_handler.py - Built-in command implementations for Advanced Shell Simulation
@@ -12,8 +13,10 @@ import time
 from pathlib import Path
 from typing import List
 
-from shell_types import ParsedCommand,JobStatus
+from shell_types import ParsedCommand, JobStatus
 from job_manager import JobManager
+from process_scheduler import ProcessScheduler
+from scheduler_commands import SchedulerCommands
 
 
 class CommandHandler:
@@ -21,6 +24,9 @@ class CommandHandler:
 
     def __init__(self, job_manager: JobManager):
         self.job_manager = job_manager
+        # Deliverable 2: Add process scheduler
+        self.process_scheduler = ProcessScheduler()
+        self.scheduler_commands = SchedulerCommands(self.process_scheduler)
 
     def handle_command(self, parsed: ParsedCommand) -> None:
         """Execute a built-in command"""
@@ -44,7 +50,11 @@ class CommandHandler:
             'fg': self.handle_fg,
             'bg': self.handle_bg,
             'stop': self.handle_stop,  # Temporary for testing bg command
-            'help': self.handle_help
+            'help': self.handle_help,
+            # Deliverable 2: Scheduling commands
+            'schedule': self.scheduler_commands.handle_schedule,
+            'addprocess': self.scheduler_commands.handle_addprocess,
+            'scheduler': self.scheduler_commands.handle_scheduler
         }
 
         handler = command_map.get(parsed.command)
@@ -102,8 +112,10 @@ class CommandHandler:
 
     def handle_exit(self, args: List[str]) -> None:
         """Exit shell command"""
+        # Clean shutdown - stop scheduler and kill remaining jobs
+        if hasattr(self, 'process_scheduler'):
+            self.process_scheduler.stop_scheduler()
 
-        # Clean shutdown - kill any remaining jobs
         jobs = self.job_manager.get_all_jobs()
         for job in jobs:
             if job.status.value != "Done":
@@ -486,6 +498,7 @@ class CommandHandler:
         print("  rm [options] [files...] - Remove files (-r recursive, -f force)")
         print("  touch [files...]  - Create empty files or update timestamps")
         print("  kill [pids...]    - Kill processes by PID")
+        print("  stop [job_id]     - Stop a running job (for testing bg command)")
         print("  exit              - Exit shell")
         print("  help              - Show this help")
         print()
@@ -493,6 +506,16 @@ class CommandHandler:
         print("  jobs              - List background jobs")
         print("  fg [job_id]       - Bring job to foreground")
         print("  bg [job_id]       - Resume job in background")
+        print()
+        print("Process Scheduling (Deliverable 2):")
+        print("  schedule rr [quantum]     - Configure Round-Robin scheduling")
+        print("  schedule priority         - Configure Priority-Based scheduling")
+        print("  addprocess <n> <duration> [priority] - Add process to scheduler")
+        print("  scheduler start           - Start the scheduler")
+        print("  scheduler stop            - Stop and clear scheduler")
+        print("  scheduler status          - Show scheduler status")
+        print("  scheduler metrics         - Show performance metrics")
+        print("  scheduler clear           - Clear scheduler state and metrics")
         print()
         print("Usage:")
         print("  command &         - Run command in background")
@@ -506,13 +529,25 @@ class CommandHandler:
         print("  mkdir -p path/to/dir")
         print("  rm -rf unwanted_dir")
         print("  sleep 10 &")
+        print("  scheduler config rr 2          # Round-Robin with 2s quantum")
+        print("  scheduler addprocess task1 5 3  # Add process with priority 3")
+        print("  scheduler start                 # Start scheduling")
+        print("  scheduler stop                  # Stop scheduling")
+        print("  scheduler clear                 # Clear metrics and queues")
         print("  jobs")
         print("  fg 1")
         print("  cat file1.txt file2.txt")
         print("  echo \"Hello\\nWorld\"")
         print()
-        print("Advanced Features (Future Deliverables):")
-        print("  - Process scheduling algorithms")
+        print("Scheduler Workflow:")
+        print("  1. Configure:     scheduler config rr 2")
+        print("  2. Add processes: scheduler addprocess task1 5")
+        print("  3. Start:         scheduler start")
+        print("  4. Monitor:       scheduler status")
+        print("  5. View metrics:  scheduler metrics")
+        print("  6. Clear state:   scheduler clear")
+        print()
+        print("Future Deliverables:")
         print("  - Memory management simulation")
         print("  - Process synchronization")
         print("  - Command piping")

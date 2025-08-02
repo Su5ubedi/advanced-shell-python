@@ -57,7 +57,7 @@ def test_round_robin_configurable_time_slice():
         # Add jobs with varying time requirements
         scheduler.add_process(jobs[0], priority=5, time_needed=0.3)  # Completes before time slice
         scheduler.add_process(jobs[1], priority=5, time_needed=1.5)  # Needs multiple time slices
-        scheduler.add_process(jobs[2], priority=5, time_needed=0.2)  # Completes before time slice
+        scheduler.add_process(jobs[2], priority=5, time_needed=4.0)  # Completes before time slice
         scheduler.add_process(jobs[3], priority=5, time_needed=0.4)  # Completes before time slice
         
         print(f"Jobs added with time slice {time_slice}s:")

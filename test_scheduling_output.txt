@@ -7,6 +7,7 @@ Testing Constraints:
 3. Process execution simulated with time.sleep()
 
 === Testing Round-Robin Scheduling with Configurable Time Slice ===
+Created test directory: test
 
 --- Testing with time slice: 0.5 seconds ---
 Scheduler set to round_robin
@@ -14,7 +15,7 @@ Time slice: 0.5 seconds
 Added process 1 (Priority: 5, Time needed: 0.3s)
 Scheduler started
 Added process 2 (Priority: 5, Time needed: 1.5s)
-Added process 3 (Priority: 5, Time needed: 0.2s)
+Added process 3 (Priority: 5, Time needed: 4.0s)
 Added process 4 (Priority: 5, Time needed: 0.4s)
 Jobs added with time slice 0.5s:
   Process 1: 'touch test/rr_ts0.5_file1.txt' (0.3s) - Should complete in one slice
@@ -32,33 +33,67 @@ Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
   Simulating execution time: 0.50s
   Command executed successfully in 0.51s
-Running process 3 for 0.2s (Round-Robin)
+Running process 3 for 0.5s (Round-Robin)
   Command: mkdir test/rr_ts0.5_dir
-  Simulating execution time: 0.20s
-  Command failed: mkdir: test/rr_ts0.5_dir: File exists
-
-Process 3 completed (Total time: 0.2s)
+  Simulating execution time: 0.50s
+  Command executed successfully in 0.52s
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts0.5_*
   Simulating execution time: 0.40s
-  Command executed successfully in 0.41s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:28 test/rr_ts0.5_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:28 test/rr_ts0.5_file2.txt
+  Command executed successfully in 0.42s
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts0.5_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts0.5_file2.txt
 
 test/rr_ts0.5_dir:
 total 0
-drwxr-xr-x   2 stevens34  staff   64 Aug  2 09:25 .
-drwxr-xr-x  20 stevens34  staff  640 Aug  2 09:25 ..
+drwxr-xr-x  2 stevens34  staff   64 Aug  2 09:34 .
+drwxr-xr-x  5 stevens34  staff  160 Aug  2 09:34 ..
 Process 4 completed (Total time: 0.4s)
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
   Simulating execution time: 0.50s
   Command executed successfully in 0.52s
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 0.5' > test/rr_ts0.5_file2.txt
   Simulating execution time: 0.47s
   Command executed successfully in 0.48s
 Process 2 completed (Total time: 1.5s)
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Running process 3 for 0.5s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.50s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Running process 3 for 0.4s (Round-Robin)
+  Command: mkdir test/rr_ts0.5_dir
+  Simulating execution time: 0.36s
+  Command failed: mkdir: test/rr_ts0.5_dir: File exists
+
+Process 3 completed (Total time: 4.0s)
 Round-Robin test with 0.5s time slice completed
 Checking created files:
   ✓ test/rr_ts0.5_file1.txt created
@@ -72,7 +107,7 @@ Time slice: 1.0 seconds
 Added process 1 (Priority: 5, Time needed: 0.3s)
 Scheduler started
 Added process 2 (Priority: 5, Time needed: 1.5s)
-Added process 3 (Priority: 5, Time needed: 0.2s)
+Added process 3 (Priority: 5, Time needed: 4.0s)
 Added process 4 (Priority: 5, Time needed: 0.4s)
 Jobs added with time slice 1.0s:
   Process 1: 'touch test/rr_ts1.0_file1.txt' (0.3s) - Should complete in one slice
@@ -89,30 +124,44 @@ Process 1 completed (Total time: 0.3s)
 Running process 2 for 1.0s (Round-Robin)
   Command: echo 'Job 2 with time slice 1.0' > test/rr_ts1.0_file2.txt
   Simulating execution time: 1.00s
-  Command executed successfully in 1.03s
-Running process 3 for 0.2s (Round-Robin)
+  Command executed successfully in 1.02s
+Running process 3 for 1.0s (Round-Robin)
   Command: mkdir test/rr_ts1.0_dir
-  Simulating execution time: 0.20s
-  Command failed: mkdir: test/rr_ts1.0_dir: File exists
-
-Process 3 completed (Total time: 0.2s)
+  Simulating execution time: 1.00s
+  Command executed successfully in 1.01s
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts1.0_*
   Simulating execution time: 0.40s
   Command executed successfully in 0.42s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:28 test/rr_ts1.0_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:28 test/rr_ts1.0_file2.txt
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts1.0_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts1.0_file2.txt
 
 test/rr_ts1.0_dir:
 total 0
-drwxr-xr-x   2 stevens34  staff   64 Aug  2 09:25 .
-drwxr-xr-x  20 stevens34  staff  640 Aug  2 09:25 ..
+drwxr-xr-x  2 stevens34  staff   64 Aug  2 09:34 .
+drwxr-xr-x  8 stevens34  staff  256 Aug  2 09:34 ..
 Process 4 completed (Total time: 0.4s)
 Running process 2 for 0.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 1.0' > test/rr_ts1.0_file2.txt
-  Simulating execution time: 0.47s
-  Command executed successfully in 0.49s
+  Simulating execution time: 0.48s
+  Command executed successfully in 0.50s
 Process 2 completed (Total time: 1.5s)
+Running process 3 for 1.0s (Round-Robin)
+  Command: mkdir test/rr_ts1.0_dir
+  Simulating execution time: 1.00s
+  Command failed: mkdir: test/rr_ts1.0_dir: File exists
+
+Running process 3 for 1.0s (Round-Robin)
+  Command: mkdir test/rr_ts1.0_dir
+  Simulating execution time: 1.00s
+  Command failed: mkdir: test/rr_ts1.0_dir: File exists
+
+Running process 3 for 0.9s (Round-Robin)
+  Command: mkdir test/rr_ts1.0_dir
+  Simulating execution time: 0.95s
+  Command failed: mkdir: test/rr_ts1.0_dir: File exists
+
+Process 3 completed (Total time: 4.0s)
 Round-Robin test with 1.0s time slice completed
 Checking created files:
   ✓ test/rr_ts1.0_file1.txt created
@@ -126,7 +175,7 @@ Time slice: 2.0 seconds
 Added process 1 (Priority: 5, Time needed: 0.3s)
 Scheduler started
 Added process 2 (Priority: 5, Time needed: 1.5s)
-Added process 3 (Priority: 5, Time needed: 0.2s)
+Added process 3 (Priority: 5, Time needed: 4.0s)
 Added process 4 (Priority: 5, Time needed: 0.4s)
 Jobs added with time slice 2.0s:
   Process 1: 'touch test/rr_ts2.0_file1.txt' (0.3s) - Should complete in one slice
@@ -143,26 +192,30 @@ Process 1 completed (Total time: 0.3s)
 Running process 2 for 1.5s (Round-Robin)
   Command: echo 'Job 2 with time slice 2.0' > test/rr_ts2.0_file2.txt
   Simulating execution time: 1.50s
-  Command executed successfully in 1.51s
+  Command executed successfully in 1.52s
 Process 2 completed (Total time: 1.5s)
-Running process 3 for 0.2s (Round-Robin)
+Running process 3 for 2.0s (Round-Robin)
   Command: mkdir test/rr_ts2.0_dir
-  Simulating execution time: 0.20s
-  Command failed: mkdir: test/rr_ts2.0_dir: File exists
-
-Process 3 completed (Total time: 0.2s)
+  Simulating execution time: 2.00s
+  Command executed successfully in 2.02s
 Running process 4 for 0.4s (Round-Robin)
   Command: ls -la test/rr_ts2.0_*
   Simulating execution time: 0.40s
-  Command executed successfully in 0.43s
-  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:28 test/rr_ts2.0_file1.txt
--rw-r--r--  1 stevens34  staff  26 Aug  2 09:28 test/rr_ts2.0_file2.txt
+  Command executed successfully in 0.41s
+  Output: -rw-r--r--  1 stevens34  staff   0 Aug  2 09:34 test/rr_ts2.0_file1.txt
+-rw-r--r--  1 stevens34  staff  26 Aug  2 09:34 test/rr_ts2.0_file2.txt
 
 test/rr_ts2.0_dir:
 total 0
-drwxr-xr-x   2 stevens34  staff   64 Aug  2 09:25 .
-drwxr-xr-x  20 stevens34  staff  640 Aug  2 09:25 ..
+drwxr-xr-x   2 stevens34  staff   64 Aug  2 09:34 .
+drwxr-xr-x  11 stevens34  staff  352 Aug  2 09:34 ..
 Process 4 completed (Total time: 0.4s)
+Running process 3 for 2.0s (Round-Robin)
+  Command: mkdir test/rr_ts2.0_dir
+  Simulating execution time: 1.98s
+  Command failed: mkdir: test/rr_ts2.0_dir: File exists
+
+Process 3 completed (Total time: 4.0s)
 Round-Robin test with 2.0s time slice completed
 Checking created files:
   ✓ test/rr_ts2.0_file1.txt created
@@ -197,8 +250,7 @@ Process 4 completed (Total time: 0.5s)
 Running process 2 (Priority: 5)
   Command: mkdir test/priority_medium_dir
   Simulating execution time: 0.20s
-  Command failed: mkdir: test/priority_medium_dir: File exists
-
+  Command executed successfully in 0.22s
 Process 2 completed (Total time: 0.2s)
 Running process 3 (Priority: 10)
   Command: echo 'Low priority - longer job' > test/priority_low_long.txt
@@ -224,7 +276,7 @@ Starting scheduler...
 Running process 1 (Priority: 10)
   Command: echo 'Low priority job running' > test/preempt_low_priority.txt
   Simulating execution time: 2.00s
-  Command executed successfully in 2.02s
+  Command executed successfully in 2.01s
 Process 1 completed (Total time: 2.0s)
 Added process 2 (Priority: 1, Time needed: 0.5s)
 Added high priority job after 0.5s:
@@ -233,7 +285,7 @@ Expected behavior: High priority job should preempt low priority job immediately
 Running process 2 (Priority: 1)
   Command: echo 'High priority job preempting' > test/preempt_high_priority.txt
   Simulating execution time: 0.50s
-  Command executed successfully in 0.52s
+  Command executed successfully in 0.51s
 Process 2 completed (Total time: 0.5s)
 Preemption test completed
 Checking created files:

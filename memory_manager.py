@@ -22,6 +22,7 @@ class PageReplacementAlgorithm(Enum):
 
 class Page:
     """Represents a memory page (NEW)"""
+
     def __init__(self, page_id: int, process_id: int):
         self.page_id = page_id
         self.process_id = process_id
@@ -38,11 +39,13 @@ class Page:
 
 class Process:
     """Process with memory requirements (NEW)"""
+
     def __init__(self, pid: int, name: str, pages_needed: int):
         self.pid = pid
         self.name = name
         self.pages_needed = pages_needed
-        self.page_table: Dict[int, Optional[Page]] = {i: None for i in range(pages_needed)}
+        self.page_table: Dict[int, Optional[Page]] = {
+            i: None for i in range(pages_needed)}
 
 
 class MemoryManager:
@@ -205,6 +208,29 @@ class MemoryManager:
                 "algorithm": self.replacement_algorithm.value,
                 "processes": len(self.processes)
             }
+
+    def reset_memory(self) -> bool:
+        """Reset all memory management state and statistics (NEW)"""
+        with self.lock:
+            # Reset physical memory
+            self.physical_memory = [None] * self.total_frames
+            self.free_frames = list(range(self.total_frames))
+            self.used_frames.clear()
+
+            # Reset statistics
+            self.page_faults = 0
+            self.page_hits = 0
+            self.page_replacements = 0
+
+            # Reset processes
+            self.processes.clear()
+            self.next_pid = 1
+
+            # Reset algorithm data structures
+            self.fifo_queue.clear()
+            self.lru_access_order.clear()
+
+            return True
 
     def deallocate_process(self, pid: int) -> bool:
         """Deallocate all pages for a process (NEW)"""

@@ -303,21 +303,26 @@ memory status
 ### 4. LRU Page Replacement Algorithm
 
 ```bash
-# Set algorithm to LRU
+memory reset
 memory algorithm lru
+memory create LRUTest 15
 
-# Create process
-memory create LRUTest 8
+# Fill all 12 frames first
+memory alloc 1 0   # Frame 0
+memory alloc 1 1   # Frame 1
+# ... continue until ...
+memory alloc 1 11  # Frame 11 (all frames full)
 
-# Create access pattern with locality of reference
-memory alloc 1 0    # Load page 0
-memory alloc 1 1    # Load page 1
-memory alloc 1 2    # Load page 2
-memory alloc 1 0    # Access page 0 again (updates LRU)
-memory alloc 1 3    # Load page 3
-memory alloc 1 4    # Load page 4
-memory alloc 1 5    # Should replace least recently used
-memory alloc 1 0    # Should be hit if page 0 still in memory
+# Now create access pattern
+memory alloc 1 0   # Hit - updates LRU timestamp
+memory alloc 1 1   # Hit - updates LRU timestamp
+
+# Force replacement (Page 2 should be LRU victim)
+memory alloc 1 12  # Should replace Page 2 (least recently used)
+
+# Test what got replaced
+memory alloc 1 2   # Should be fault (was replaced)
+memory alloc 1 0   # Should be hit (recently accessed)
 
 # Check statistics
 memory status

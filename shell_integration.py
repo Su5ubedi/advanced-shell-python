@@ -42,6 +42,8 @@ class MemorySyncCommands:
             return self._set_algorithm(args[1])
         elif command == "test" and len(args) >= 2:
             return self._test_memory(args[1])
+        elif command == "reset":
+            return self._reset_memory()
         else:
             return self._memory_help()
 
@@ -73,7 +75,8 @@ memory create <name> <pages>      - Create process with pages needed
 memory alloc <pid> <page_num>     - Allocate specific page for process
 memory dealloc <pid>              - Deallocate all pages for process
 memory algorithm <fifo|lru>       - Set page replacement algorithm
-memory test <sequential|random>   - Run memory access pattern test"""
+memory test <sequential|random>   - Run memory access pattern test
+memory reset                      - Reset all memory state and statistics"""
 
     def _sync_help(self) -> str:
         """Synchronization help"""
@@ -105,7 +108,8 @@ Active Processes: {status['processes']}"""
         if self.memory_manager.processes:
             result += "\n\n=== ACTIVE PROCESSES==="
             for pid, process in self.memory_manager.processes.items():
-                allocated = len([p for p in process.page_table.values() if p is not None])
+                allocated = len(
+                    [p for p in process.page_table.values() if p is not None])
                 result += f"\nPID {pid} ({process.name}): {allocated}/{process.pages_needed} pages"
 
         return result
@@ -136,6 +140,17 @@ Active Processes: {status['processes']}"""
         except Exception as e:
             return f"Error deallocating process: {e}"
 
+    def _reset_memory(self) -> str:
+        """Reset all memory management state (NEW)"""
+        try:
+            success = self.memory_manager.reset_memory()
+            if success:
+                return "✓ Memory management system reset successfully\n✓ All processes, statistics, and memory state cleared"
+            else:
+                return "Error: Failed to reset memory system"
+        except Exception as e:
+            return f"Error resetting memory: {e}"
+
     def _set_algorithm(self, algorithm: str) -> str:
         """Set page replacement algorithm (NEW)"""
         if self.memory_manager.set_algorithm(algorithm):
@@ -152,13 +167,15 @@ Active Processes: {status['processes']}"""
         if pattern == "sequential":
             for i in range(8):
                 page_num = i % 6
-                success, message = self.memory_manager.allocate_page(pid, page_num)
+                success, message = self.memory_manager.allocate_page(
+                    pid, page_num)
                 result += f"Access {i+1}: {message}\n"
         elif pattern == "random":
             import random
             for i in range(8):
                 page_num = random.randint(0, 5)
-                success, message = self.memory_manager.allocate_page(pid, page_num)
+                success, message = self.memory_manager.allocate_page(
+                    pid, page_num)
                 result += f"Access {i+1}: {message}\n"
 
         return result + "\n" + self._memory_status()
@@ -331,7 +348,8 @@ Consumer Waits: {status['consumer_waits']}"""
         elif operation == "status":
             if self.dining_philosophers:
                 status = self.dining_philosophers.get_status()
-                meals_str = ", ".join([f"P{i}:{meals}" for i, meals in enumerate(status['meals_eaten'])])
+                meals_str = ", ".join(
+                    [f"P{i}:{meals}" for i, meals in enumerate(status['meals_eaten'])])
                 return f"""Dining Philosophers Status:
 Running: {status['running']}
 Philosophers: {status['num_philosophers']}

@@ -214,17 +214,12 @@ memory status
 
 ### 3. FIFO Page Replacement Algorithm
 ```bash
-# Set algorithm to FIFO
-memory algorithm fifo
-
-# Create process needing more pages than available frames
-memory create LargeApp 10
-
-# Allocate pages to force replacements (assuming 12 frames)
-memory alloc 1 0
+memory algorithm fifo # Set algorithm to FIFO
+memory create LargeApp 9 # Create process needing more pages than available frames
+memory alloc 1 0 # Allocate pages to force replacements (assuming 10 frames)
 memory alloc 1 1
-# ... continue until frame 11
-memory alloc 1 11
+# ... continue until frame 9
+memory alloc 1 9
 memory alloc 1 0    # Should trigger FIFO replacement
 memory alloc 1 1    # Should trigger another replacement
 
@@ -294,20 +289,11 @@ memory status
 
 ### 5. Producer-Consumer Problem
 ```bash
-# Start Producer-Consumer with 2 producers, 3 consumers
-sync prodcons start 2 3
-
-# Check status while running
-sync prodcons status
-
-# Let it run for a while, then check again
-sync prodcons status
-
-# Stop the simulation
-sync prodcons stop
-
-# Check final results
-sync prodcons status
+sync prodcons start 2 3 # Start Producer-Consumer with 2 producers, 3 consumers
+sync prodcons status # Check status while running
+sync prodcons status # Let it run for a while, then check again
+sync prodcons stop # Stop the simulation
+sync prodcons status # Check final results
 ```
 
 **Expected Output:**
@@ -351,15 +337,9 @@ Consumer Waits: 12
 ```bash
 # Start Dining Philosophers with 5 philosophers for 20 seconds
 sync philosophers start 5 20
-
-# Check status while running
-sync philosophers status
-
-# Wait for completion or stop manually
-sync philosophers stop
-
-# Check final results showing deadlock prevention
-sync philosophers status
+sync philosophers status # Check status while running
+sync philosophers stop # Wait for completion or stop manually
+sync philosophers status # Check final results showing deadlock prevention
 ```
 
 **Expected Output:**

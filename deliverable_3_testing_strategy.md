@@ -1,18 +1,29 @@
 # Deliverable 3 Testing Guide
+
 ## Memory Management and Process Synchronization
 
 This guide provides comprehensive testing instructions for all Deliverable 3 requirements with expected outputs.
+
+## Configuration
+
+**Memory Manager Default Settings:**
+
+- Default frame count: 12 frames (configurable)
+- Default page replacement algorithm: FIFO
+- Frame indexing: 0-11
 
 ---
 
 ## 🚀 Quick Start - Automated Testing
 
 ### Memory Management Tests
+
 ```bash
 python3 main.py --test-memory
 ```
 
 **What it does:**
+
 - Tests FIFO page replacement algorithm with 4 frames
 - Tests LRU page replacement with locality of reference
 - Creates processes and simulates page allocation
@@ -20,6 +31,7 @@ python3 main.py --test-memory
 - Shows page replacement in action
 
 **Expected Output:**
+
 ```
 === TESTING MEMORY MANAGEMENT FEATURES ===
 
@@ -53,11 +65,13 @@ python3 main.py --test-memory
 ```
 
 ### Process Synchronization Tests
+
 ```bash
 python3 main.py --test-sync
 ```
 
 **What it does:**
+
 - Tests mutex creation, acquisition, and release
 - Tests semaphore operations with multiple permits
 - Runs Producer-Consumer simulation with statistics
@@ -65,6 +79,7 @@ python3 main.py --test-sync
 - Shows real-time status updates and final results
 
 **Expected Output:**
+
 ```
 === TESTING SYNCHRONIZATION FEATURES ===
 
@@ -119,6 +134,7 @@ python3 main.py --test-sync
 ## 🧪 Manual Testing Guide
 
 ### 1. Basic Paging System - Memory Allocation/Deallocation
+
 ```bash
 # Start shell
 python3 main.py
@@ -147,6 +163,7 @@ memory status
 ```
 
 **Expected Output:**
+
 ```
 ✓ Process 1 (WebBrowser) created with 6 pages needed
 ✓ Process 2 (TextEditor) created with 4 pages needed
@@ -185,6 +202,7 @@ PID 3 (MediaPlayer): 0/8 pages
 ```
 
 ### 2. Page Fault Handling
+
 ```bash
 # Create a process
 memory create TestApp 5
@@ -199,6 +217,7 @@ memory status
 ```
 
 **Expected Output:**
+
 ```
 ✓ Process 1 (TestApp) created with 5 pages needed
 ✓ Page allocated: P1:Pg0 -> Frame 0
@@ -213,39 +232,76 @@ memory status
 ```
 
 ### 3. FIFO Page Replacement Algorithm
+
 ```bash
 memory algorithm fifo # Set algorithm to FIFO
-memory create LargeApp 9 # Create process needing more pages than available frames
-memory alloc 1 0 # Allocate pages to force replacements (assuming 10 frames)
-memory alloc 1 1
-# ... continue until frame 9
-memory alloc 1 9
-memory alloc 1 0    # Should trigger FIFO replacement
-memory alloc 1 1    # Should trigger another replacement
+memory create LargeApp 15 # Create process with 15 pages (0-14)
+
+# Phase 1: Fill all 12 available frames
+memory alloc 1 0  # Frame 0
+memory alloc 1 1  # Frame 1
+memory alloc 1 2  # Frame 2
+memory alloc 1 3  # Frame 3
+memory alloc 1 4  # Frame 4
+memory alloc 1 5  # Frame 5
+memory alloc 1 6  # Frame 6e
+memory alloc 1 7  # Frame 7
+memory alloc 1 8  # Frame 8
+memory alloc 1 9  # Frame 9
+memory alloc 1 10 # Frame 10
+memory alloc 1 11 # Frame 11 (all frames now full since default frame is 12)
+
+# Phase 2: Force FIFO replacements
+memory alloc 1 12 # Should replace Page 0 (oldest in FIFO queue)
+memory alloc 1 13 # Should replace Page 1 (next oldest in FIFO queue)
+memory alloc 1 14 # Should replace Page 2 (next oldest in FIFO queue)
+
+# Phase 3: Test what got replaced vs what's still in memory
+memory alloc 1 0  # Should be page fault (was replaced)
+memory alloc 1 1  # Should be page fault (was replaced)
+memory alloc 1 2  # Should be page fault (was replaced)
+memory alloc 1 11 # Should be page hit (still in memory)
+memory alloc 1 12 # Should be page hit (recently loaded)
 
 # Check statistics
 memory status
 ```
 
 **Expected Output:**
+
 ```
 ✓ Page replacement algorithm set to FIFO
-✓ Process 1 (LargeApp) created with 10 pages needed
+✓ Process 1 (LargeApp) created with 15 pages needed
 ✓ Page allocated: P1:Pg0 -> Frame 0
 ✓ Page allocated: P1:Pg1 -> Frame 1
-...
+✓ Page allocated: P1:Pg2 -> Frame 2
+✓ Page allocated: P1:Pg3 -> Frame 3
+✓ Page allocated: P1:Pg4 -> Frame 4
+✓ Page allocated: P1:Pg5 -> Frame 5
+✓ Page allocated: P1:Pg6 -> Frame 6
+✓ Page allocated: P1:Pg7 -> Frame 7
+✓ Page allocated: P1:Pg8 -> Frame 8
+✓ Page allocated: P1:Pg9 -> Frame 9
+✓ Page allocated: P1:Pg10 -> Frame 10
 ✓ Page allocated: P1:Pg11 -> Frame 11
-✓ Page allocated: P1:Pg0 -> Frame 0    # FIFO replacement occurred
-✓ Page allocated: P1:Pg1 -> Frame 1    # Another replacement
+✓ Page allocated: P1:Pg12 -> Frame 0    # FIFO replacement (Page 0 evicted)
+✓ Page allocated: P1:Pg13 -> Frame 1    # FIFO replacement (Page 1 evicted)
+✓ Page allocated: P1:Pg14 -> Frame 2    # FIFO replacement (Page 2 evicted)
+✓ Page allocated: P1:Pg0 -> Frame 3     # Page fault (Page 0 was replaced)
+✓ Page allocated: P1:Pg1 -> Frame 4     # Page fault (Page 1 was replaced)
+✓ Page allocated: P1:Pg2 -> Frame 5     # Page fault (Page 2 was replaced)
+✓ Page hit: P1:Pg11                     # Still in memory (Frame 11)
+✓ Page hit: P1:Pg12                     # Still in memory (Frame 0)
 
 === PAGING STATISTICS (NEW) ===
-✓ Page Faults: 14
-✓ Page Hits: 0
-✓ Page Replacements: 2
-✓ Hit Ratio: 0.0%
+✓ Page Faults: 18
+✓ Page Hits: 2
+✓ Page Replacements: 6
+✓ Hit Ratio: 10.0%
 ```
 
 ### 4. LRU Page Replacement Algorithm
+
 ```bash
 # Set algorithm to LRU
 memory algorithm lru
@@ -268,6 +324,7 @@ memory status
 ```
 
 **Expected Output:**
+
 ```
 ✓ Page replacement algorithm set to LRU
 ✓ Process 1 (LRUTest) created with 8 pages needed
@@ -288,6 +345,7 @@ memory status
 ```
 
 ### 5. Producer-Consumer Problem
+
 ```bash
 sync prodcons start 2 3 # Start Producer-Consumer with 2 producers, 3 consumers
 sync prodcons status # Check status while running
@@ -297,6 +355,7 @@ sync prodcons status # Check final results
 ```
 
 **Expected Output:**
+
 ```
 ✓ Producer-Consumer started: 2 producers, 3 consumers
 
@@ -334,6 +393,7 @@ Consumer Waits: 12
 ```
 
 ### 6. Dining Philosophers Problem
+
 ```bash
 # Start Dining Philosophers with 5 philosophers for 20 seconds
 sync philosophers start 5 20
@@ -343,6 +403,7 @@ sync philosophers status # Check final results showing deadlock prevention
 ```
 
 **Expected Output:**
+
 ```
 ✓ Dining Philosophers started: 5 philosophers for 20s
 
@@ -370,6 +431,7 @@ Active Threads: 0
 ```
 
 ### 7. Comprehensive Integration Test
+
 ```bash
 # Test both memory and sync together
 memory create SyncApp 6
@@ -395,6 +457,7 @@ sync philosophers stop
 ```
 
 **Expected Output:**
+
 ```
 ✓ Process 1 (SyncApp) created with 6 pages needed
 ✓ Page replacement algorithm set to LRU
@@ -441,6 +504,7 @@ Access 2: ✓ Page allocated: P2:Pg1 -> Frame 1
 ## 📊 Key Success Indicators
 
 ### Memory Management
+
 - **Page Faults**: Should occur on first access to each page
 - **Page Hits**: Should occur on subsequent access to same page
 - **Page Replacements**: Should occur when memory is full
@@ -448,6 +512,7 @@ Access 2: ✓ Page allocated: P2:Pg1 -> Frame 1
 - **Clean Deallocation**: All pages freed when process deallocated
 
 ### Process Synchronization
+
 - **No Deadlocks**: Dining philosophers should complete without hanging
 - **Race Prevention**: Producer-Consumer buffer should never have invalid states
 - **Fair Access**: All philosophers should get some meals
@@ -455,6 +520,7 @@ Access 2: ✓ Page allocated: P2:Pg1 -> Frame 1
 - **Statistics**: Waits and preventions show synchronization working
 
 ### Integration
+
 - **Both Systems Running**: Memory and sync should work simultaneously
 - **No Interference**: One system shouldn't break the other
 - **Resource Management**: Clean startup and shutdown of all components
@@ -465,12 +531,14 @@ Access 2: ✓ Page allocated: P2:Pg1 -> Frame 1
 ## 🐛 Troubleshooting
 
 ### Common Issues
+
 1. **"Command not found"**: Ensure you're in the shell (`python3 main.py`) not system terminal
 2. **"Process not found"**: Use `memory status` to check existing process IDs
 3. **Tests hanging**: Use Ctrl+C to interrupt, then `exit` to quit shell properly
 4. **Import errors**: Ensure all `.py` files are in the same directory
 
 ### Expected Behaviors
+
 - Page replacements will vary based on access patterns and timing
 - Dining philosophers meal counts depend on random timing and duration
 - Producer-Consumer results vary with number of producers/consumers and timing

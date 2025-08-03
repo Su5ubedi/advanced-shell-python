@@ -15,6 +15,41 @@ class SchedulerCommands:
     def __init__(self, scheduler: ProcessScheduler):
         self.scheduler = scheduler
 
+    def handle_addprocess(self, args: List[str]) -> None:
+        """Handle addprocess command to add a process to the scheduler"""
+        if len(args) < 3:
+            raise ValueError("addprocess: missing arguments\nUsage: addprocess <name> <duration> [priority]")
+
+        name = args[1]
+        if not name:
+            raise ValueError("addprocess: process name cannot be empty")
+
+        try:
+            duration = float(args[2])
+            if duration <= 0:
+                raise ValueError("addprocess: duration must be positive")
+        except ValueError as e:
+            if "duration must be positive" in str(e):
+                raise e
+            raise ValueError(f"addprocess: invalid duration '{args[2]}': must be a number")
+
+        priority = 0  # Default priority
+        if len(args) > 3:
+            try:
+                priority = int(args[3])
+            except ValueError:
+                raise ValueError(f"addprocess: invalid priority '{args[3]}': must be an integer")
+
+        try:
+            pid = self.scheduler.add_process(name, duration, priority)
+            if self.scheduler.config and self.scheduler.config.algorithm == SchedulingAlgorithm.PRIORITY:
+                print(f"Added process '{name}' (PID: {pid}, Duration: {duration}s, Priority: {priority})")
+            else:
+                print(f"Added process '{name}' (PID: {pid}, Duration: {duration}s)")
+
+        except ValueError as e:
+            raise ValueError(str(e))
+
     def handle_scheduler(self, args: List[str]) -> None:
         """Handle scheduler command for all scheduler operations"""
         if len(args) < 2:

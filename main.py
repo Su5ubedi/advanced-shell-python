@@ -82,46 +82,139 @@ def test_memory_management():
     try:
         from memory_manager import MemoryManager
 
-        # Test FIFO algorithm
-        print("✓ Testing FIFO Algorithm:")
-        mm = MemoryManager(total_frames=4)
-        mm.set_algorithm("fifo")
+        # Test 1: Memory Usage Tracking per Process
+        print("✓ Testing Memory Usage Tracking per Process:")
+        mm = MemoryManager(total_frames=6)  # Small frames to force overflow
 
-        # Create test processes
-        pid1 = mm.create_process("TestApp1", 6)
-        pid2 = mm.create_process("TestApp2", 4)
+        # Create multiple processes with different memory needs
+        pid1 = mm.create_process("WebBrowser", 4)
+        pid2 = mm.create_process("TextEditor", 3)
+        pid3 = mm.create_process("MediaPlayer", 5)
 
-        # Simulate memory access that causes page faults and replacements
-        print("  - Creating processes and allocating pages...")
-        for i in range(8):
-            pid = pid1 if i % 2 == 0 else pid2
-            page_num = i % (6 if pid == pid1 else 4)
-            success, message = mm.allocate_page(pid, page_num)
-            print(f"    {message}")
+        print("  - Created processes with different memory requirements")
+        print(f"    * WebBrowser (PID {pid1}): needs 4 pages")
+        print(f"    * TextEditor (PID {pid2}): needs 3 pages")
+        print(f"    * MediaPlayer (PID {pid3}): needs 5 pages")
+
+        # Allocate pages for each process
+        print("  - Allocating pages for each process...")
+        mm.allocate_page(pid1, 0)  # WebBrowser page 0
+        mm.allocate_page(pid1, 1)  # WebBrowser page 1
+        mm.allocate_page(pid2, 0)  # TextEditor page 0
+        mm.allocate_page(pid3, 0)  # MediaPlayer page 0
+        mm.allocate_page(pid3, 1)  # MediaPlayer page 1
 
         status = mm.get_status()
-        print(f"  - FIFO Results: {status['page_faults']} faults, {status['page_hits']} hits")
+        print(f"  - Memory Usage: {status['used_frames']}/{status['total_frames']} frames ({status['utilization']:.1f}%)")
+        print(f"  - Per-Process Allocation:")
+        for pid, process in mm.processes.items():
+            allocated = len([p for p in process.page_table.values() if p is not None])
+            print(f"    * PID {pid} ({process.name}): {allocated}/{process.pages_needed} pages allocated")
         print()
 
-        # Test LRU algorithm
-        print("✓ Testing LRU Algorithm:")
-        mm2 = MemoryManager(total_frames=4)
-        mm2.set_algorithm("lru")
+        # Test 2: Memory Overflow Simulation
+        print("✓ Testing Memory Overflow Scenarios:")
+        mm.set_algorithm("fifo")
+        print("  - Set algorithm to FIFO for overflow testing")
 
-        pid3 = mm2.create_process("TestApp3", 6)
-        print("  - Testing LRU with locality of reference...")
+        # Force memory overflow by allocating more pages than available frames
+        print("  - Forcing memory overflow (6 frames available, allocating more)...")
+        overflow_results = []
 
-        # Access pattern with locality
-        access_pattern = [0, 1, 2, 0, 1, 3, 4, 0, 1, 5]
-        for i, page_num in enumerate(access_pattern):
-            success, message = mm2.allocate_page(pid3, page_num)
-            print(f"    Access {i+1}: Page {page_num} -> {message}")
+        # Fill remaining frame
+        success, msg = mm.allocate_page(pid3, 2)  # Frame 6 (last free frame)
+        overflow_results.append(f"    Frame 6: {msg}")
 
-        status2 = mm2.get_status()
-        print(f"  - LRU Results: {status2['page_faults']} faults, {status2['page_hits']} hits")
+        # Now force page replacements
+        success, msg = mm.allocate_page(pid1, 2)  # Should trigger replacement
+        overflow_results.append(f"    Overflow 1: {msg}")
+
+        success, msg = mm.allocate_page(pid2, 1)  # Should trigger another replacement
+        overflow_results.append(f"    Overflow 2: {msg}")
+
+        success, msg = mm.allocate_page(pid3, 3)  # Should trigger another replacement
+        overflow_results.append(f"    Overflow 3: {msg}")
+
+        for result in overflow_results:
+            print(result)
+
+        status = mm.get_status()
+        print(f"  - Memory overflow results:")
+        print(f"    * Total page faults: {status['page_faults']}")
+        print(f"    * Page replacements triggered: {status['replacements']}")
+        print(f"    * Memory utilization: {status['utilization']:.1f}% (should be 100%)")
+        print()
+
+        # Test 3: Page Fault Tracking
+        print("✓ Testing Page Fault Tracking:")
+        print("  - Testing page fault vs page hit patterns...")
+
+        # Access same pages multiple times to show fault vs hit tracking
+        test_accesses = [
+            (pid1, 0, "First access (should be hit - already allocated)"),
+            (pid1, 3, "New page (should be fault)"),
+            (pid1, 0, "Repeat access (should be hit)"),
+            (pid2, 2, "New page (should be fault)"),
+            (pid1, 3, "Repeat access (should be hit)"),
+        ]
+
+        for pid, page_num, description in test_accesses:
+            old_faults = mm.page_faults
+            old_hits = mm.page_hits
+            success, msg = mm.allocate_page(pid, page_num)
+            new_faults = mm.page_faults
+            new_hits = mm.page_hits
+
+            fault_occurred = new_faults > old_faults
+            hit_occurred = new_hits > old_hits
+            result_type = "FAULT" if fault_occurred else "HIT" if hit_occurred else "ERROR"
+
+            print(f"    * {description}: {result_type}")
+
+        final_status = mm.get_status()
+        print(f"  - Final page fault statistics:")
+        print(f"    * Total page faults: {final_status['page_faults']}")
+        print(f"    * Total page hits: {final_status['page_hits']}")
+        print(f"    * Hit ratio: {final_status['hit_ratio']:.1f}%")
+        print()
+
+        # Test 4: FIFO vs LRU Comparison
+        print("✓ Testing FIFO vs LRU Page Replacement:")
+
+        # Test FIFO
+        mm_fifo = MemoryManager(total_frames=4)
+        mm_fifo.set_algorithm("fifo")
+        pid_fifo = mm_fifo.create_process("FIFOTest", 6)
+
+        print("  - FIFO Algorithm Test:")
+        fifo_pattern = [0, 1, 2, 3, 0, 1, 4, 5]  # Will cause replacements
+        for i, page_num in enumerate(fifo_pattern):
+            success, msg = mm_fifo.allocate_page(pid_fifo, page_num)
+
+        fifo_status = mm_fifo.get_status()
+        print(f"    * FIFO Results: {fifo_status['page_faults']} faults, {fifo_status['page_hits']} hits, {fifo_status['replacements']} replacements")
+
+        # Test LRU
+        mm_lru = MemoryManager(total_frames=4)
+        mm_lru.set_algorithm("lru")
+        pid_lru = mm_lru.create_process("LRUTest", 6)
+
+        print("  - LRU Algorithm Test:")
+        lru_pattern = [0, 1, 2, 3, 0, 1, 4, 5]  # Same pattern, different results
+        for i, page_num in enumerate(lru_pattern):
+            success, msg = mm_lru.allocate_page(pid_lru, page_num)
+
+        lru_status = mm_lru.get_status()
+        print(f"    * LRU Results: {lru_status['page_faults']} faults, {lru_status['page_hits']} hits, {lru_status['replacements']} replacements")
+
+        print(f"  - Algorithm Comparison:")
+        print(f"    * FIFO hit ratio: {fifo_status['hit_ratio']:.1f}%")
+        print(f"    * LRU hit ratio: {lru_status['hit_ratio']:.1f}%")
+        print(f"    * LRU is {'better' if lru_status['hit_ratio'] > fifo_status['hit_ratio'] else 'same as'} FIFO for this pattern")
         print()
 
         print("✓ Memory management tests completed successfully!")
+        print("✓ Demonstrated: Per-process tracking, memory overflow, page fault tracking, algorithm comparison")
 
     except ImportError as e:
         print(f"Error: Could not import memory management modules: {e}")

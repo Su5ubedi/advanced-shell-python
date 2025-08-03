@@ -21,7 +21,7 @@ class CommandParser:
         # Deliverable 2: Process scheduling commands
         'schedule', 'addprocess', 'scheduler',
         # Deliverable 3: NEW - Memory management and synchronization commands
-        'memory', 'sync'
+        'memory', 'sync',
         # Deliverable 2: Unified process scheduling command
         'scheduler',
         # Deliverable 3: Authentication commands

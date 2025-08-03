@@ -18,20 +18,6 @@ class JobStatus(Enum):
     WAITING = "Waiting"  # New status for scheduling
 
 
-class UserRole(Enum):
-    """User role enumeration"""
-    ADMIN = "admin"
-    STANDARD = "standard"
-    GUEST = "guest"
-
-
-class Permission(Enum):
-    """File permission enumeration"""
-    READ = "read"
-    WRITE = "write"
-    EXECUTE = "execute"
-
-
 @dataclass
 class Job:
     """Represents a background job"""

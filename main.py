@@ -50,6 +50,7 @@ def show_help():
     print("  --debug      Enable debug mode")
     print("  --test-memory    Run memory management tests (NEW)")
     print("  --test-sync      Run synchronization tests (NEW)")
+    print("  --test-scheduling-with-metrics  Run scheduling tests with performance metrics")
     print()
     print("Once started, type 'help' for available shell commands")
     print()
@@ -320,6 +321,72 @@ def test_synchronization():
         print(f"Error during synchronization tests: {e}")
 
 
+def run_scheduling_tests():
+    """Run the scheduling tests with performance metrics"""
+    print("Running scheduling tests with performance metrics...")
+
+    # Import test functions
+    from test_scheduling_with_metrics import (
+        test_round_robin_configurable_time_slice,
+        test_priority_with_time_simulation,
+        test_preemption_with_time_simulation,
+        test_early_completion_behavior
+    )
+
+    # Redirect all output to a text file
+    output_file = "test_scheduling_with_metrics_output.txt"
+
+    # Save original stdout
+    original_stdout = sys.stdout
+
+    try:
+        # Redirect stdout to file
+        with open(output_file, 'w') as f:
+            sys.stdout = f
+
+            print("Advanced Shell - Scheduling Test Suite with Performance Metrics")
+            print("==============================================================")
+            print()
+            print("Testing Constraints:")
+            print("1. Time slice is configurable and user-specified")
+            print("2. Processes complete early if possible (removed from queue)")
+            print("3. Process execution simulated with time.sleep()")
+            print("4. Performance metrics tracked for all tests")
+            print()
+
+            try:
+                test_round_robin_configurable_time_slice()
+                test_priority_with_time_simulation()
+                test_preemption_with_time_simulation()
+                test_early_completion_behavior()
+
+                print("All tests completed successfully!")
+                print("The scheduling algorithms are working correctly with configurable time slices.")
+                print("All test files and directories have been created in the 'test/' directory.")
+                print()
+                print("Key Features Demonstrated:")
+                print("- Configurable time slices (0.5s, 1.0s, 2.0s)")
+                print("- Early completion when processes finish before time slice")
+                print("- Time simulation using actual command execution")
+                print("- Priority-based preemption with time simulation")
+                print("- Comprehensive performance metrics collection")
+
+            except KeyboardInterrupt:
+                print("\nTests interrupted by user")
+            except Exception as e:
+                print(f"Test error: {e}")
+
+    finally:
+        # Restore original stdout
+        sys.stdout = original_stdout
+        print(f"Test output has been saved to: {output_file}")
+
+        # Generate performance report
+        from performance_metrics import performance_tracker
+        performance_tracker.generate_report("performance_metrics_report.txt")
+        print("Performance metrics report has been saved to: performance_metrics_report.txt")
+
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
@@ -358,6 +425,12 @@ def main():
         help='Run synchronization tests and exit (NEW)'
     )
 
+    parser.add_argument(
+        '--test-scheduling-with-metrics',
+        action='store_true',
+        help='Run scheduling tests with performance metrics'
+    )
+
     args = parser.parse_args()
 
     if args.version:
@@ -368,11 +441,13 @@ def main():
         show_help()
         return
 
+    if args.test_scheduling_with_metrics:
+        run_scheduling_tests()
+        return
     # Deliverable 3: NEW - Handle test options
     if args.test_memory:
         test_memory_management()
         return
-
     if args.test_sync:
         test_synchronization()
         return

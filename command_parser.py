@@ -19,11 +19,9 @@ class CommandParser:
         'mkdir', 'rmdir', 'rm', 'touch', 'kill', 'jobs',
         'fg', 'bg', 'stop', 'help',
         # Deliverable 2: Process scheduling commands
-        'schedule', 'addprocess', 'scheduler',
+        'scheduler', 'addprocess', 'scheduler',
         # Deliverable 3: NEW - Memory management and synchronization commands
         'memory', 'sync',
-        # Deliverable 2: Unified process scheduling command
-        'scheduler',
         # Deliverable 3: Authentication commands
         'login', 'logout', 'whoami', 'adduser', 'chpasswd',
         # Text processing commands
@@ -68,7 +66,7 @@ class CommandParser:
         """Parse a command with pipes"""
         # Split by pipe character
         pipe_parts = [part.strip() for part in input_str.split('|')]
-        
+
         # Check for background execution on the last command
         background = False
         if pipe_parts[-1].endswith('&'):

@@ -61,7 +61,6 @@ class CommandHandler:
             'stop': self.handle_stop,
             'help': self.handle_help,
             # Deliverable 2: Scheduling commands
-            'schedule': self.scheduler_commands.handle_schedule,
             'addprocess': self.scheduler_commands.handle_addprocess,
             'scheduler': self.scheduler_commands.handle_scheduler,
             # Deliverable 3: NEW - Memory and synchronization commands
@@ -737,41 +736,6 @@ class CommandHandler:
         else:
             print("Not logged in. Use 'login' to authenticate.")
 
-    def handle_schedule(self, args: List[str]) -> None:
-        """Schedule command - add a job to the scheduler"""
-        if len(args) < 2:
-            raise ValueError("schedule: missing command\nUsage: schedule <command> [priority] [time_needed]")
-
-        command = args[1]
-        priority = 5  # Default priority
-        time_needed = 5.0  # Default time needed
-
-        # Parse optional arguments
-        if len(args) >= 3:
-            try:
-                priority = int(args[2])
-                if priority < 1 or priority > 10:
-                    raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
-            except ValueError:
-                raise ValueError(f"Invalid priority: {args[2]}")
-
-        if len(args) >= 4:
-            try:
-                time_needed = float(args[3])
-                if time_needed <= 0:
-                    raise ValueError("Time needed must be positive")
-            except ValueError:
-                raise ValueError(f"Invalid time: {args[3]}")
-
-        # Create a scheduled job
-        job = self.job_manager.add_scheduled_job(
-            command=command,
-            args=[command],  # Simple command without arguments for now
-            priority=priority,
-            time_needed=time_needed
-        )
-
-        print(f"Scheduled job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s)")
 
     def handle_scheduler(self, args: List[str]) -> None:
         """Scheduler command - configure and view scheduler status"""
@@ -816,54 +780,6 @@ class CommandHandler:
         else:
             raise ValueError(f"Unknown scheduler subcommand: {subcommand}\n"
                            "Available: round_robin [time_slice], priority")
-
-    def handle_addjob(self, args: List[str]) -> None:
-        """Addjob command - add a job with specific parameters"""
-        if len(args) < 2:
-            raise ValueError("addjob: missing command\n"
-                           "Usage: addjob <command> [priority] [time_needed] [background]")
-
-        command = args[1]
-        priority = 5
-        time_needed = 5.0
-        background = True
-
-        # Parse optional arguments
-        if len(args) >= 3:
-            try:
-                priority = int(args[2])
-                if priority < 1 or priority > 10:
-                    raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
-            except ValueError:
-                raise ValueError(f"Invalid priority: {args[2]}")
-
-        if len(args) >= 4:
-            try:
-                time_needed = float(args[3])
-                if time_needed <= 0:
-                    raise ValueError("Time needed must be positive")
-            except ValueError:
-                raise ValueError(f"Invalid time: {args[3]}")
-
-        if len(args) >= 5:
-            bg_str = args[4].lower()
-            if bg_str in ['true', '1', 'yes']:
-                background = True
-            elif bg_str in ['false', '0', 'no']:
-                background = False
-            else:
-                raise ValueError(f"Invalid background value: {args[4]}")
-
-        # Create a scheduled job
-        job = self.job_manager.add_scheduled_job(
-            command=command,
-            args=[command],
-            priority=priority,
-            time_needed=time_needed,
-            background=background
-        )
-
-        print(f"Added job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s, Background: {background})")
 
     # Deliverable 3: NEW - Access to memory manager and synchronizer for integration
     def get_memory_manager(self):

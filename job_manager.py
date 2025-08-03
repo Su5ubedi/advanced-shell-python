@@ -39,48 +39,6 @@ class JobManager:
         self.jobs[self.job_counter] = job
         return job
 
-    def add_scheduled_job(self, command: str, args: List[str], priority: int = 5,
-                         time_needed: float = 5.0, background: bool = True) -> Job:
-        """Add a new job to the scheduler"""
-        self.job_counter += 1
-
-        # Create a dummy process for scheduled jobs
-        class DummyProcess:
-            def __init__(self, job_id):
-                self.pid = job_id
-                self._poll_result = None
-
-            def poll(self):
-                return self._poll_result
-
-            def terminate(self):
-                pass
-
-            def kill(self):
-                pass
-
-        dummy_process = DummyProcess(self.job_counter)
-
-        job = Job(
-            id=self.job_counter,
-            pid=self.job_counter,  # Use job ID as PID for scheduled jobs
-            command=command,
-            args=args,
-            status=JobStatus.WAITING,
-            process=dummy_process,
-            start_time=time.time(),
-            background=background,
-            priority=priority,
-            total_time_needed=time_needed
-        )
-
-        self.jobs[self.job_counter] = job
-
-        # Add to scheduler
-        self.scheduler.add_process(job, priority, time_needed)
-
-        return job
-
     def _on_scheduled_job_complete(self, job: Job):
         """Callback when a scheduled job completes"""
         job.status = JobStatus.DONE
@@ -146,12 +104,6 @@ class JobManager:
             return False
 
         print(f"Bringing job [{job.id}] to foreground: {job.command}")
-
-        # Handle scheduled jobs differently
-        if hasattr(job, 'priority') and job.priority:
-            print(f"Note: This is a scheduled job (Priority: {job.priority})")
-            print("Scheduled jobs run automatically based on the scheduling algorithm")
-            return True
 
         try:
             # Resume the process if it's stopped

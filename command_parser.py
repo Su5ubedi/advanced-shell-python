@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 command_parser.py - Command parsing and validation for Advanced Shell Simulation
+Updated for Deliverable 3: Memory Management and Process Synchronization
 """
 
 import shlex
@@ -17,8 +18,10 @@ class CommandParser:
         'cd', 'pwd', 'exit', 'echo', 'clear', 'ls', 'cat',
         'mkdir', 'rmdir', 'rm', 'touch', 'kill', 'jobs',
         'fg', 'bg', 'stop', 'help',
-        # Deliverable 2: Unified process scheduling command
-        'scheduler'
+        # Deliverable 2: Process scheduling commands
+        'schedule', 'addprocess', 'scheduler',
+        # Deliverable 3: NEW - Memory management and synchronization commands
+        'memory', 'sync'
     }
 
     def parse(self, input_str: str) -> Optional[ParsedCommand]:

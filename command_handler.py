@@ -1,7 +1,7 @@
-
 #!/usr/bin/env python3
 """
 command_handler.py - Built-in command implementations for Advanced Shell Simulation
+Updated for Deliverable 3: Memory Management and Process Synchronization
 """
 
 import os
@@ -17,6 +17,8 @@ from shell_types import ParsedCommand, JobStatus
 from job_manager import JobManager
 from process_scheduler import ProcessScheduler
 from scheduler_commands import SchedulerCommands
+# Deliverable 3: NEW imports
+from shell_integration import MemorySyncCommands
 
 
 class CommandHandler:
@@ -27,6 +29,8 @@ class CommandHandler:
         # Deliverable 2: Add process scheduler
         self.process_scheduler = ProcessScheduler()
         self.scheduler_commands = SchedulerCommands(self.process_scheduler)
+        # Deliverable 3: NEW - Add memory management and synchronization
+        self.memory_sync_commands = MemorySyncCommands()
 
     def handle_command(self, parsed: ParsedCommand) -> None:
         """Execute a built-in command"""
@@ -54,7 +58,10 @@ class CommandHandler:
             # Deliverable 2: Scheduling commands
             'schedule': self.scheduler_commands.handle_schedule,
             'addprocess': self.scheduler_commands.handle_addprocess,
-            'scheduler': self.scheduler_commands.handle_scheduler
+            'scheduler': self.scheduler_commands.handle_scheduler,
+            # Deliverable 3: NEW - Memory and synchronization commands
+            'memory': self.handle_memory,
+            'sync': self.handle_sync,
         }
 
         handler = command_map.get(parsed.command)
@@ -63,6 +70,30 @@ class CommandHandler:
         else:
             raise ValueError(f"Unknown built-in command: {parsed.command}")
 
+    # Deliverable 3: NEW command handlers
+    def handle_memory(self, args: List[str]) -> None:
+        """Handle memory management commands (NEW)"""
+        try:
+            # Skip the command name 'memory' and pass the rest
+            memory_args = args[1:] if len(args) > 1 else []
+            result = self.memory_sync_commands.handle_memory(memory_args)
+            if result:
+                print(result)
+        except Exception as e:
+            raise ValueError(f"memory: {e}")
+
+    def handle_sync(self, args: List[str]) -> None:
+        """Handle synchronization commands (NEW)"""
+        try:
+            # Skip the command name 'sync' and pass the rest
+            sync_args = args[1:] if len(args) > 1 else []
+            result = self.memory_sync_commands.handle_sync(sync_args)
+            if result:
+                print(result)
+        except Exception as e:
+            raise ValueError(f"sync: {e}")
+
+    # All existing command handlers remain the same...
     def handle_cd(self, args: List[str]) -> None:
         """Change directory command"""
         if len(args) < 2:
@@ -112,6 +143,13 @@ class CommandHandler:
 
     def handle_exit(self, args: List[str]) -> None:
         """Exit shell command"""
+        # Deliverable 3: NEW - Clean shutdown with memory/sync cleanup
+        if hasattr(self, 'memory_sync_commands'):
+            if self.memory_sync_commands.producer_consumer:
+                self.memory_sync_commands.producer_consumer.stop()
+            if self.memory_sync_commands.dining_philosophers:
+                self.memory_sync_commands.dining_philosophers.stop()
+
         # Clean shutdown - stop scheduler and kill remaining jobs
         if hasattr(self, 'process_scheduler'):
             self.process_scheduler.stop_scheduler()
@@ -517,6 +555,22 @@ class CommandHandler:
         print("  scheduler metrics         - Show performance metrics")
         print("  scheduler clear           - Clear scheduler state and metrics")
         print()
+        # Deliverable 3: NEW help section
+        print("✓ Memory Management (Deliverable 3 - NEW):")
+        print("  memory status             - Show memory status and statistics")
+        print("  memory create <n> <pages> - Create process with memory requirements")
+        print("  memory alloc <pid> <page> - Allocate specific page for process")
+        print("  memory dealloc <pid>      - Deallocate all pages for process")
+        print("  memory algorithm <fifo|lru> - Set page replacement algorithm")
+        print("  memory test <sequential|random> - Run memory access pattern test")
+        print()
+        print("✓ Process Synchronization (Deliverable 3 - NEW):")
+        print("  sync status               - Show synchronization status")
+        print("  sync mutex <create|acquire|release> <n> - Mutex operations")
+        print("  sync semaphore <create|acquire|release> <n> [value] - Semaphore operations")
+        print("  sync prodcons <start|stop|status> [producers] [consumers] - Producer-Consumer")
+        print("  sync philosophers <start|stop|status> [philosophers] - Dining Philosophers")
+        print()
         print("Usage:")
         print("  command &         - Run command in background")
         print("  Ctrl+C            - Interrupt current foreground process")
@@ -542,9 +596,28 @@ class CommandHandler:
         print("  scheduler round_robin 2.5")
         print("  addjob task2 1 5.0 true")
         print()
+        # Deliverable 3: NEW examples
+        print("✓ Deliverable 3 Examples (NEW):")
+        print("  memory create webapp 8         # Create process needing 8 pages")
+        print("  memory alloc 1 0               # Allocate page 0 for process 1")
+        print("  memory algorithm lru           # Switch to LRU replacement")
+        print("  memory test random             # Test random access pattern")
+        print("  sync mutex create mylock       # Create a mutex")
+        print("  sync prodcons start 2 3        # Start Producer-Consumer")
+        print("  sync philosophers start 5      # Start Dining Philosophers")
+        print()
         print("Scheduling Algorithms:")
         print("  Round-Robin: Each process gets a time slice, then moves to end of queue")
         print("  Priority: Highest priority process runs first (1=highest, 10=lowest)")
+        print()
+        print("✓ Memory Management (NEW):")
+        print("  FIFO: First-In-First-Out page replacement")
+        print("  LRU: Least Recently Used page replacement")
+        print("  Page Faults: When requested page not in memory")
+        print()
+        print("✓ Synchronization Problems (NEW):")
+        print("  Producer-Consumer: Buffer synchronization with semaphores")
+        print("  Dining Philosophers: Deadlock prevention with asymmetric fork acquisition")
         print()
         print("Scheduler Workflow:")
         print("  1. Configure:     scheduler config rr 2")
@@ -555,8 +628,6 @@ class CommandHandler:
         print("  6. Clear state:   scheduler clear")
         print()
         print("Future Deliverables:")
-        print("  - Memory management simulation")
-        print("  - Process synchronization")
         print("  - Command piping")
         print("  - User authentication and file permissions")
         print()
@@ -565,11 +636,11 @@ class CommandHandler:
         """Schedule command - add a job to the scheduler"""
         if len(args) < 2:
             raise ValueError("schedule: missing command\nUsage: schedule <command> [priority] [time_needed]")
-        
+
         command = args[1]
         priority = 5  # Default priority
         time_needed = 5.0  # Default time needed
-        
+
         # Parse optional arguments
         if len(args) >= 3:
             try:
@@ -578,7 +649,7 @@ class CommandHandler:
                     raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
             except ValueError:
                 raise ValueError(f"Invalid priority: {args[2]}")
-        
+
         if len(args) >= 4:
             try:
                 time_needed = float(args[3])
@@ -586,7 +657,7 @@ class CommandHandler:
                     raise ValueError("Time needed must be positive")
             except ValueError:
                 raise ValueError(f"Invalid time: {args[3]}")
-        
+
         # Create a scheduled job
         job = self.job_manager.add_scheduled_job(
             command=command,
@@ -594,7 +665,7 @@ class CommandHandler:
             priority=priority,
             time_needed=time_needed
         )
-        
+
         print(f"Scheduled job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s)")
 
     def handle_scheduler(self, args: List[str]) -> None:
@@ -611,7 +682,7 @@ class CommandHandler:
                 print(f"  Running Process: {status['running_process']}")
             else:
                 print("  Running Process: None")
-            
+
             if status['processes']:
                 print("\nQueued Processes:")
                 for proc in status['processes']:
@@ -619,9 +690,9 @@ class CommandHandler:
                           f"Time: {proc['time_executed']:.1f}/{proc['time_needed']:.1f}s, "
                           f"Status: {proc['status']}")
             return
-        
+
         subcommand = args[1].lower()
-        
+
         if subcommand == "round_robin":
             time_slice = 2.0  # Default
             if len(args) >= 3:
@@ -631,12 +702,12 @@ class CommandHandler:
                         raise ValueError("Time slice must be positive")
                 except ValueError:
                     raise ValueError(f"Invalid time slice: {args[2]}")
-            
+
             self.job_manager.set_scheduling_algorithm("round_robin", time_slice)
-            
+
         elif subcommand == "priority":
             self.job_manager.set_scheduling_algorithm("priority")
-            
+
         else:
             raise ValueError(f"Unknown scheduler subcommand: {subcommand}\n"
                            "Available: round_robin [time_slice], priority")
@@ -646,12 +717,12 @@ class CommandHandler:
         if len(args) < 2:
             raise ValueError("addjob: missing command\n"
                            "Usage: addjob <command> [priority] [time_needed] [background]")
-        
+
         command = args[1]
         priority = 5
         time_needed = 5.0
         background = True
-        
+
         # Parse optional arguments
         if len(args) >= 3:
             try:
@@ -660,7 +731,7 @@ class CommandHandler:
                     raise ValueError("Priority must be between 1 (highest) and 10 (lowest)")
             except ValueError:
                 raise ValueError(f"Invalid priority: {args[2]}")
-        
+
         if len(args) >= 4:
             try:
                 time_needed = float(args[3])
@@ -668,7 +739,7 @@ class CommandHandler:
                     raise ValueError("Time needed must be positive")
             except ValueError:
                 raise ValueError(f"Invalid time: {args[3]}")
-        
+
         if len(args) >= 5:
             bg_str = args[4].lower()
             if bg_str in ['true', '1', 'yes']:
@@ -677,7 +748,7 @@ class CommandHandler:
                 background = False
             else:
                 raise ValueError(f"Invalid background value: {args[4]}")
-        
+
         # Create a scheduled job
         job = self.job_manager.add_scheduled_job(
             command=command,
@@ -686,5 +757,14 @@ class CommandHandler:
             time_needed=time_needed,
             background=background
         )
-        
+
         print(f"Added job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s, Background: {background})")
+
+    # Deliverable 3: NEW - Access to memory manager and synchronizer for integration
+    def get_memory_manager(self):
+        """Get memory manager instance for integration"""
+        return self.memory_sync_commands.get_memory_manager()
+
+    def get_synchronizer(self):
+        """Get synchronizer instance for integration"""
+        return self.memory_sync_commands.get_synchronizer()

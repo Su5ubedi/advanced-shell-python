@@ -15,6 +15,7 @@ python3 deliverable_2_shell.py
 python3 deliverable_2_shell.py --help     # Show help
 python3 deliverable_2_shell.py --version  # Show version info
 python3 deliverable_2_shell.py --debug    # Enable debug mode
+python3 deliverable_2_shell.py --test-scheduling-with-metrics  Run scheduling tests with performance metrics
 
 Example Usage:
 # Navigation and file operations (from Deliverable 1)

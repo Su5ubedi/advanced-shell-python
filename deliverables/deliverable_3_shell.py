@@ -73,6 +73,7 @@ import time
 import os
 import sys
 import argparse
+import io
 
 # SHELL TYPES
 class JobStatus(Enum):
@@ -2690,9 +2691,6 @@ class PipeHandler:
 
     def _execute_builtin_pipe_chain(self, commands: List[PipeCommand], auth_system=None) -> str:
         """Execute a chain of built-in commands"""
-        import io
-        from command_handler import CommandHandler
-
         # Create a temporary command handler for built-in commands
         temp_handler = CommandHandler(None)  # We don't need job manager for this
 
@@ -5514,4 +5512,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

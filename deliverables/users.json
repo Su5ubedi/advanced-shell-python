@@ -1,0 +1,115 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "role": "admin",
+      "home_directory": "/home/admin",
+      "permissions": {
+        "/": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/home": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/etc": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/var": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/usr": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/bin": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/sbin": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/tmp": [
+          "read",
+          "write",
+          "execute"
+        ]
+      }
+    },
+    {
+      "username": "user",
+      "password_hash": "e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446",
+      "role": "standard",
+      "home_directory": "/home/user",
+      "permissions": {
+        "/home/user": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/tmp": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/home": [
+          "read",
+          "execute"
+        ],
+        "/usr": [
+          "read",
+          "execute"
+        ],
+        "/bin": [
+          "read",
+          "execute"
+        ],
+        "/var": [
+          "read"
+        ],
+        "/etc": [
+          "read"
+        ]
+      }
+    },
+    {
+      "username": "guest",
+      "password_hash": "6b93ccba414ac1d0ae1e77f3fac560c748a6701ed6946735a49d463351518e16",
+      "role": "guest",
+      "home_directory": "/home/guest",
+      "permissions": {
+        "/home/guest": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/tmp": [
+          "read",
+          "write",
+          "execute"
+        ],
+        "/home": [
+          "read"
+        ],
+        "/usr": [
+          "read"
+        ],
+        "/bin": [
+          "read"
+        ]
+      }
+    }
+  ]
+}

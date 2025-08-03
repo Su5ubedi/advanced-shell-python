@@ -40,7 +40,7 @@ class Shell:
     def run(self):
         """Start the main shell loop"""
         self.print_welcome()
-        
+
         # Require login before starting shell
         if not self.command_handler.auth_system.is_authenticated():
             self.handle_initial_login()
@@ -98,7 +98,7 @@ class Shell:
                 username = input("Username: ").strip()
                 if not username:
                     continue
-                
+
                 password = input("Password: ").strip()
                 if not password:
                     continue
@@ -245,7 +245,7 @@ class Shell:
 
         # Get current time for enhanced prompt
         current_time = time.strftime("%H:%M:%S")
-        
+
         # Add user information to prompt
         if self.command_handler.auth_system.is_authenticated():
             user = self.command_handler.auth_system.get_current_user()
@@ -306,7 +306,6 @@ class Shell:
         print("Quick Start - Piping:")
         print("  ls | grep txt           # List files containing 'txt'")
         print("  cat file.txt | sort     # Display sorted file contents")
-        print("  ls | grep .py | wc -l   # Count Python files")
         print()
         print("Quick Start - Process Scheduling:")
         print("  scheduler config rr 2         # Configure Round-Robin")

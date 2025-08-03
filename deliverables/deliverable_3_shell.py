@@ -74,6 +74,8 @@ import os
 import sys
 import argparse
 import io
+import time
+import threading
 
 # SHELL TYPES
 class JobStatus(Enum):
@@ -5107,8 +5109,6 @@ def test_memory_management():
     print()
 
     try:
-        from memory_manager import MemoryManager
-
         # Test 1: Memory Usage Tracking per Process
         print("✓ Testing Memory Usage Tracking per Process:")
         mm = MemoryManager(total_frames=6)  # Small frames to force overflow
@@ -5255,10 +5255,6 @@ def test_synchronization():
     print()
 
     try:
-        from process_sync import ProcessSynchronizer, ProducerConsumer, DiningPhilosophers
-        import time
-        import threading
-
         # Test basic synchronization primitives
         print("✓ Testing Synchronization Primitives:")
         sync = ProcessSynchronizer()
@@ -5351,14 +5347,6 @@ def run_scheduling_tests():
     """Run the scheduling tests with performance metrics"""
     print("Running scheduling tests with performance metrics...")
 
-    # Import test functions
-    from test_scheduling_with_metrics import (
-        test_round_robin_configurable_time_slice,
-        test_priority_with_time_simulation,
-        test_preemption_with_time_simulation,
-        test_early_completion_behavior
-    )
-
     # Redirect all output to a text file
     output_file = "test_scheduling_with_metrics_output.txt"
 
@@ -5408,7 +5396,6 @@ def run_scheduling_tests():
         print(f"Test output has been saved to: {output_file}")
 
         # Generate performance report
-        from performance_metrics import performance_tracker
         performance_tracker.generate_report("performance_metrics_report.txt")
         print("Performance metrics report has been saved to: performance_metrics_report.txt")
 

@@ -18,6 +18,20 @@ class JobStatus(Enum):
     WAITING = "Waiting"  # New status for scheduling
 
 
+class UserRole(Enum):
+    """User role enumeration"""
+    ADMIN = "admin"
+    STANDARD = "standard"
+    GUEST = "guest"
+
+
+class Permission(Enum):
+    """File permission enumeration"""
+    READ = "read"
+    WRITE = "write"
+    EXECUTE = "execute"
+
+
 @dataclass
 class Job:
     """Represents a background job"""
@@ -53,3 +67,5 @@ class ParsedCommand:
     args: List[str]
     background: bool = False
     pipes: List[List[str]] = field(default_factory=list)
+    has_pipes: bool = False
+    pipe_chain: List[str] = field(default_factory=list)

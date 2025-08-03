@@ -1,73 +1,57 @@
-# Advanced Shell Simulation - Deliverable 2
+# Advanced Shell Simulation - Deliverable 3
 
-A custom shell implementation in Python that simulates Unix-like Operating System environment with process management, job control, and advanced scheduling algorithms.
+A custom shell implementation in Python that simulates Unix-like Operating System environment with process management, job control, advanced scheduling algorithms, **memory management with paging**, and **process synchronization**.
 
-## Features Implemented (Deliverable 2)
+## Features
 
-### Built-in Commands
-- **cd [directory]** - Change directory (supports ~, relative paths)
-- **pwd** - Print working directory
-- **echo [text]** - Print text (supports \n, \t escape sequences)
-- **clear** - Clear screen
-- **ls [options] [dir]** - List files (-a for hidden, -l for long format)
-- **cat [files...]** - Display file contents
-- **mkdir [options] [dirs...]** - Create directories (-p for parents)
-- **rmdir [dirs...]** - Remove empty directories
-- **rm [options] [files...]** - Remove files (-r recursive, -f force)
-- **touch [files...]** - Create empty files or update timestamps
-- **kill [pids...]** - Kill processes by PID
-- **stop [job_id]** - Stop a running job (for testing bg command)
-- **exit** - Exit shell
-- **help** - Show available commands
+### Core Shell Features (Deliverable 1)
+- **Built-in Commands**: `cd`, `pwd`, `echo`, `clear`, `ls`, `cat`, `mkdir`, `rmdir`, `rm`, `touch`, `kill`, `exit`, `help`
+- **Process Management**: Foreground and background execution
+- **Job Control**: `jobs`, `fg`, `bg`, `stop` commands
+- **Signal handling and error management**
 
-### Process Management & Job Control
-- **jobs** - List background jobs
-- **fg [job_id]** - Bring background job to foreground
-- **bg [job_id]** - Resume stopped job in background
-- Signal handling and error management
+### Process Scheduling (Deliverable 2)
+- **Round-Robin Scheduling**: Configurable time slice (default: 2.0 seconds)
+- **Priority-Based Scheduling**: Preemptive priority queue (1=highest, 10=lowest)
+- **Process Simulation**: Uses `time.sleep()` to simulate execution
+- **Performance Metrics**: Execution time, waiting time tracking
 
-### NEW: Process Scheduling (Deliverable 2)
-- **schedule <command> [priority] [time]** - Add job to scheduler
-- **scheduler [round_robin|priority] [time_slice]** - Configure scheduler
-- **addjob <command> [priority] [time] [background]** - Add job with parameters
+### ✓ Memory Management (Deliverable 3 - NEW)
+- **Paging System**: Fixed-size page frames with allocation/deallocation
+- **Page Replacement Algorithms**:
+  - **FIFO**: First-In-First-Out replacement
+  - **LRU**: Least Recently Used replacement
+- **Page Fault Handling**: Tracks faults, hits, and replacements
+- **Memory Statistics**: Utilization, hit ratios, performance metrics
 
-#### Scheduling Algorithms
-1. **Round-Robin Scheduling**
-   - Each process gets a configurable time slice
-   - After time slice expires, process moves to end of queue
-   - Time slice is configurable (default: 2.0 seconds)
-   - Processes complete when their total time is reached
-
-2. **Priority-Based Scheduling**
-   - Processes run in priority order (1=highest, 10=lowest)
-   - Same priority processes use First-Come-First-Served (FCFS)
-   - Preemption: Higher priority jobs interrupt lower priority ones
-   - Processes run to completion
-
-#### Process Simulation
-- Uses `time.sleep()` to simulate process execution
-- Configurable execution time for each process
-- Real-time process switching and status updates
-- Thread-safe scheduling operations
+### ✓ Process Synchronization (Deliverable 3 - NEW)
+- **Synchronization Primitives**: Mutexes and semaphores
+- **Classical Problems**:
+  - **Producer-Consumer**: Multi-threaded buffer synchronization
+  - **Dining Philosophers**: Deadlock prevention with asymmetric fork acquisition
+- **Race Condition Prevention**: Thread-safe operations with proper locking
+- **Deadlock Avoidance**: Asymmetric resource acquisition strategy
 
 ## Project Structure
 
 ```
 advanced-shell-python/
-├── main.py              # Entry point with command-line options
-├── shell.py             # Main shell class and command loop
-├── command_handler.py   # Built-in command implementations
-├── command_parser.py    # Command parsing and validation
-├── job_manager.py       # Job control operations (enhanced with scheduling)
-├── scheduler.py         # NEW: Process scheduling algorithms
-├── shell_types.py       # Data types and enums (enhanced)
-├── test_scheduling.py   # NEW: Test script for scheduling features
-└── readme.md           # Documentation
+├── main.py                    # Entry point with command-line options
+├── shell.py                   # Main shell class and command loop
+├── command_handler.py         # Built-in command implementations (updated)
+├── command_parser.py          # Command parsing and validation (updated)
+├── job_manager.py             # Job control operations
+├── scheduler.py               # Process scheduling algorithms
+├── shell_types.py             # Data types and enums
+├── memory_manager.py          # NEW: Memory management with paging
+├── process_sync.py            # NEW: Process synchronization
+├── shell_integration.py       # NEW: Integration of memory and sync features
+└── README.md                  # This file
 ```
 
-## How to Run
+## Installation & Usage
 
-### Prerequisites
+### Requirements
 - Python 3.8 or higher
 
 ### Running the Shell
@@ -76,229 +60,152 @@ advanced-shell-python/
 python3 main.py
 
 # Command-line options
-python3 main.py --help     # Show help
-python3 main.py --version  # Show version info
-python3 main.py --debug    # Enable debug mode
+python3 main.py --help          # Show help
+python3 main.py --version       # Show version info
+python3 main.py --debug         # Enable debug mode
+python3 main.py --test-memory   # Test memory management (NEW)
+python3 main.py --test-sync     # Test synchronization (NEW)
 ```
 
-### Testing Scheduling Features
+## ✓ New Commands (Deliverable 3)
+
+### Memory Management Commands
 ```bash
-# Run the scheduling test suite
-python3 test_scheduling.py
+memory status                    # Show memory status and statistics
+memory create <name> <pages>     # Create process with memory requirements
+memory alloc <pid> <page_num>    # Allocate specific page for process
+memory dealloc <pid>             # Deallocate all pages for process
+memory algorithm <fifo|lru>      # Set page replacement algorithm
+memory test <sequential|random>  # Run memory access pattern test
+```
+
+### Process Synchronization Commands
+```bash
+sync status                               # Show synchronization status
+sync mutex <create|acquire|release> <n>    # Mutex operations
+sync semaphore <create|acquire|release> <n> [value] # Semaphore operations
+sync prodcons <start|stop|status> [producers] [consumers] # Producer-Consumer
+sync philosophers <start|stop|status> [philosophers] # Dining Philosophers
+```
+
+## 🧪 Deliverable 3 Testing Guide
+
+### Quick Tests
+```bash
+# Memory Management
+memory create webapp 8          # Create process
+memory alloc 1 0                # Allocate page (causes page fault)
+memory alloc 1 0                # Second access (page hit)
+memory algorithm lru            # Switch algorithms
+memory status                   # View statistics
+
+# Process Synchronization
+sync mutex create mylock        # Create mutex
+sync prodcons start 2 3         # Start Producer-Consumer
+sync philosophers start 5       # Start Dining Philosophers
+sync status                     # View all sync status
+```
+
+### Comprehensive Tests
+```bash
+# Test page replacement (memory overflow)
+memory create LargeApp 10
+memory test sequential          # Forces FIFO/LRU replacements
+
+# Test race condition prevention
+sync prodcons start 3 2         # Multiple producers/consumers
+sync prodcons status            # Monitor safe buffer access
+
+# Test deadlock prevention
+sync philosophers start 5 20    # Long-running simulation
+sync philosophers status        # Check deadlock preventions
+```
+
+### Automated Testing
+```bash
+python3 main.py --test-memory   # Automated memory tests
+python3 main.py --test-sync     # Automated synchronization tests
 ```
 
 ## Example Usage
 
 ### Basic Shell Operations
 ```bash
-# Navigation and file operations
 ls -la
-pwd
-cd /tmp
 mkdir -p test/nested/path
-touch test_file.txt
-cat test_file.txt
-rm -rf test
-
-# Directory operations
-mkdir my_directory
-rmdir my_directory
-
-# Text operations
-echo "Hello World"
-echo "Line 1\nLine 2"
-
-# Process and job management
-kill 1234          # Kill process by PID
-sleep 60 &         # Start background job
-stop 1             # Stop job 1 (testing feature)
-bg 1               # Resume job 1 in background
-fg 1               # Bring job 1 to foreground
-
-# Shell operations
-help
-exit
+echo "Hello World\nLine 2"
+sleep 10 &                     # Background job
+jobs                           # List jobs
+fg 1                           # Bring to foreground
 ```
 
-### NEW: Scheduling Examples
-
-#### Round-Robin Scheduling
+### Process Scheduling
 ```bash
-# Set Round-Robin algorithm with 2.5 second time slice
-scheduler round_robin 2.5
-
-# Add jobs with different execution times
-schedule task1 5 3.0    # Priority 5, needs 3 seconds
-schedule task2 5 5.0    # Priority 5, needs 5 seconds  
-schedule task3 5 2.0    # Priority 5, needs 2 seconds
-
-# Check scheduler status
-scheduler
-
-# Expected behavior: Each job gets 2.5 seconds, then moves to end of queue
-# Task3 completes first (2.0s < 2.5s), Task1 and Task2 continue
+scheduler round_robin 2.5      # Configure Round-Robin
+schedule task1 5 3.0           # Add job with priority 5, 3s duration
+scheduler start                # Start scheduling
+scheduler status               # Monitor execution
 ```
 
-#### Priority-Based Scheduling
+### ✓ Memory Management (NEW)
 ```bash
-# Set Priority algorithm
-scheduler priority
-
-# Add jobs with different priorities
-schedule high_priority_task 1 3.0    # Highest priority (1)
-schedule medium_priority_task 5 4.0  # Medium priority (5)
-schedule low_priority_task 10 2.0    # Lowest priority (10)
-
-# Expected behavior: Jobs run in priority order (1, 5, 10)
+memory create browser 6        # Create process needing 6 pages
+memory alloc 1 0              # Allocate page 0 -> Page fault
+memory alloc 1 1              # Allocate page 1 -> Page fault
+memory alloc 1 0              # Access page 0 -> Page hit
+memory algorithm lru          # Switch to LRU algorithm
+memory status                 # View: 2 faults, 1 hit, 66.7% hit ratio
 ```
 
-#### Preemption Example
+### ✓ Process Synchronization (NEW)
 ```bash
-# Set Priority algorithm
-scheduler priority
+# Producer-Consumer Problem
+sync prodcons start 2 3       # 2 producers, 3 consumers
+sync prodcons status          # Monitor: items produced/consumed, waits
+sync prodcons stop            # Stop simulation
 
-# Add a long-running low priority job
-schedule long_task 10 10.0
-
-# Wait a moment, then add a high priority job
-schedule urgent_task 1 2.0
-
-# Expected behavior: urgent_task preempts long_task and runs first
+# Dining Philosophers Problem
+sync philosophers start 5     # 5 philosophers
+sync philosophers status      # Monitor: meals eaten, deadlock preventions
+# Auto-stops after 15 seconds
 ```
-
-#### Advanced Job Creation
-```bash
-# Add job with all parameters
-addjob my_task 3 7.5 true    # Priority 3, 7.5 seconds, background
-
-# Check job status
-jobs
-
-# Monitor scheduler
-scheduler
-```
-
-## Scheduling Algorithm Details
-
-### Round-Robin Scheduling
-- **Time Slice**: Configurable quantum (default: 2.0 seconds)
-- **Queue Management**: FIFO queue with time slice enforcement
-- **Process Switching**: Automatic after time slice expires
-- **Completion**: Process removed when total time is reached
-- **Fairness**: Equal time allocation regardless of priority
-
-### Priority-Based Scheduling
-- **Priority Levels**: 1 (highest) to 10 (lowest)
-- **Queue Management**: Priority queue with FCFS for same priority
-- **Preemption**: Higher priority jobs interrupt lower priority ones
-- **Process Switching**: Immediate when higher priority job arrives
-- **Completion**: Process runs to completion unless preempted
-
-### Process Simulation
-- **Execution Time**: Simulated using `time.sleep()`
-- **Status Tracking**: Real-time updates (Waiting, Running, Done)
-- **Thread Safety**: Thread-safe operations with locks
-- **Performance Metrics**: Execution time, waiting time tracking
 
 ## Architecture
 
-### Enhanced Modular Design
-- **Shell**: Main command loop and user interaction
-- **CommandParser**: Input tokenization and validation
-- **CommandHandler**: Built-in command implementations (enhanced with scheduling)
-- **JobManager**: Background process and job control (enhanced with scheduler integration)
-- **Scheduler**: NEW: Process scheduling algorithms and queue management
-- **Types**: Enhanced data structures for jobs and scheduling
+### Memory Management
+- **Page Frames**: Fixed-size memory units (default: 12 frames)
+- **Page Table**: Maps logical pages to physical frames per process
+- **Replacement**: FIFO queue and LRU access tracking
+- **Statistics**: Page faults, hits, replacements, utilization
 
-### Threading Model
-- **Main Thread**: Shell command processing and user interaction
-- **Scheduler Thread**: Background process scheduling and execution
-- **Thread Safety**: Lock-based synchronization for shared resources
+### Process Synchronization
+- **Thread Safety**: All operations use proper locking
+- **Deadlock Prevention**: Asymmetric resource acquisition
+- **Classical Problems**: Producer-Consumer and Dining Philosophers
+- **Performance**: Lock acquisitions, waits, success rates tracked
 
-### Error Handling
-Comprehensive error handling for:
-- Invalid commands and arguments
-- File/directory permissions
-- Process management errors
-- Input validation errors
-- Scheduling algorithm errors
-- Thread synchronization errors
+### Integration
+- **Minimal Changes**: New features cleanly integrated into existing shell
+- **Backward Compatibility**: All existing commands work unchanged
+- **Unified Interface**: Memory and sync commands follow same patterns
+- **Error Handling**: Comprehensive validation and error messages
 
-## Testing
+## Performance Features
 
-### Built-in Testing
-```bash
-# Test scheduling features
-python3 test_scheduling.py
+- **Real-time Monitoring**: Live status updates for all subsystems
+- **Statistics Tracking**: Comprehensive metrics for analysis
+- **Thread Management**: Clean startup/shutdown of background processes
+- **Resource Cleanup**: Proper deallocation and thread termination
 
-# Test within shell
-scheduler round_robin 1.0
-schedule test1 5 2.0
-schedule test2 5 3.0
-scheduler
-```
+## Development
 
-### Manual Testing Scenarios
-```bash
-# Test Round-Robin with different time slices
-scheduler round_robin 1.0
-schedule task1 5 5.0
-schedule task2 5 3.0
-scheduler round_robin 3.0
+Built with Python 3.8+ using:
+- **Threading**: For concurrent process simulation
+- **Collections**: OrderedDict for LRU tracking
+- **Queue**: Thread-safe Producer-Consumer buffer
+- **Time**: Process execution simulation
+- **Enum**: Type-safe status and algorithm definitions
 
-# Test Priority preemption
-scheduler priority
-schedule long_task 10 10.0
-# Wait 2 seconds, then in another terminal or session:
-schedule urgent_task 1 2.0
+---
 
-# Test job management with scheduled jobs
-addjob my_job 3 5.0 true
-jobs
-fg 1  # Should show note about scheduled job
-```
-
-## Future Deliverables
-
-### Deliverable 3: Memory Management & Synchronization
-- Paging system with FIFO and LRU page replacement
-- Process synchronization with mutexes/semaphores
-- Classical synchronization problems (Producer-Consumer, Dining Philosophers)
-
-### Deliverable 4: Integration & Security
-- Command piping support
-- User authentication system
-- File permissions and access control
-- Complete system integration
-
-## Performance Considerations
-
-- **Thread Safety**: All scheduler operations are thread-safe
-- **Memory Efficiency**: Minimal memory overhead for process tracking
-- **CPU Usage**: Efficient sleep-based simulation
-- **Scalability**: Supports multiple concurrent processes
-- **Real-time Updates**: Immediate status updates and process switching
-
-## Troubleshooting
-
-### Common Issues
-1. **Scheduler not starting**: Check if jobs are added to the scheduler
-2. **Processes not switching**: Verify time slice configuration
-3. **Priority not working**: Ensure priority values are 1-10 (lower = higher priority)
-4. **Jobs not completing**: Check total time needed vs time slice
-
-### Debug Mode
-```bash
-python3 main.py --debug
-```
-
-## Contributing
-
-This project demonstrates advanced operating system concepts including:
-- Process scheduling algorithms
-- Thread management and synchronization
-- Job control and process management
-- Command-line interface design
-- Error handling and validation
-
-The implementation serves as a foundation for understanding operating system internals and can be extended with additional features.
+**Note**: This implementation demonstrates core operating system concepts including process management, memory management, and synchronization in a simulated environment suitable for educational purposes.

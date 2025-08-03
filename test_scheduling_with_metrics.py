@@ -22,29 +22,29 @@ def ensure_test_directory():
 def test_round_robin_configurable_time_slice():
     """Test Round-Robin scheduling with configurable time slice"""
     print("=== Testing Round-Robin Scheduling with Configurable Time Slice ===")
-    
+
     test_dir = ensure_test_directory()
-    
+
     # Test with different time slice configurations
     time_slice_configs = [0.5, 1.0, 2.0]
-    
+
     for time_slice in time_slice_configs:
         print(f"\n--- Testing with time slice: {time_slice} seconds ---")
-        
+
         # Start performance tracking
         performance_tracker.start_test(
             f"Round-Robin Time Slice {time_slice}s",
             "round_robin",
             time_slice
         )
-        
+
         # Reset scheduler for each test
         scheduler = Scheduler()
         scheduler.set_algorithm(SchedulingAlgorithm.ROUND_ROBIN, time_slice=time_slice)
-        
+
         # Connect scheduler completion callback to performance tracker
         scheduler.on_process_complete = lambda job: performance_tracker.job_completed(job.id, job.execution_time)
-        
+
         # Create dummy jobs with realistic shell commands
         class DummyJob:
             def __init__(self, job_id, command):
@@ -55,7 +55,7 @@ def test_round_robin_configurable_time_slice():
                 self.execution_time = 0.0
                 self.total_time_needed = 0.0
                 self.end_time = None
-        
+
         # Add jobs with different execution times
         jobs = [
             DummyJob(1, f"touch {test_dir}/rr_ts{time_slice}_file1.txt"),           # Quick job
@@ -63,7 +63,7 @@ def test_round_robin_configurable_time_slice():
             DummyJob(3, f"mkdir {test_dir}/rr_ts{time_slice}_dir"),  # Quick job
             DummyJob(4, f"ls -la {test_dir}/rr_ts{time_slice}_*"),  # Quick job
         ]
-        
+
         # Add jobs to performance tracker
         job_configs = [
             (jobs[0], 5, 0.3),  # Completes before time slice
@@ -71,11 +71,11 @@ def test_round_robin_configurable_time_slice():
             (jobs[2], 5, 0.2),  # Completes before time slice
             (jobs[3], 5, 0.4),  # Completes before time slice
         ]
-        
+
         for job, priority, time_needed in job_configs:
             performance_tracker.add_job(job.id, job.command, priority, time_needed)
             scheduler.add_process(job, priority=priority, time_needed=time_needed)
-        
+
         print(f"Jobs added with time slice {time_slice}s:")
         print(f"  Process 1: 'touch {test_dir}/rr_ts{time_slice}_file1.txt' (0.3s) - Should complete in one slice")
         print(f"  Process 2: 'echo job content' (1.5s) - Should need multiple slices")
@@ -83,17 +83,17 @@ def test_round_robin_configurable_time_slice():
         print(f"  Process 4: 'ls command' (0.4s) - Should complete in one slice")
         print(f"Expected behavior: Jobs complete early if possible, others get multiple time slices")
         print("Starting scheduler...")
-        
+
         # Start the scheduler
         scheduler.start_scheduler()
-        
+
         # Wait for all jobs to complete
         while scheduler.running:
             time.sleep(0.1)
-        
+
         # End performance tracking
         performance_tracker.end_test()
-        
+
         print(f"Round-Robin test with {time_slice}s time slice completed")
         print("Checking created files:")
         try:
@@ -108,25 +108,25 @@ def test_round_robin_configurable_time_slice():
                 print(f"  ✓ {test_dir}/rr_ts{time_slice}_dir created")
         except Exception as e:
             print(f"  Error checking files: {e}")
-    
+
     print()
 
 
 def test_priority_with_time_simulation():
     """Test Priority-based scheduling with time simulation"""
     print("=== Testing Priority-Based Scheduling with Time Simulation ===")
-    
+
     test_dir = ensure_test_directory()
-    
+
     # Start performance tracking
     performance_tracker.start_test("Priority-Based Scheduling", "priority")
-    
+
     scheduler = Scheduler()
     scheduler.set_algorithm(SchedulingAlgorithm.PRIORITY)
-    
+
     # Connect scheduler completion callback to performance tracker
     scheduler.on_process_complete = lambda job: performance_tracker.job_completed(job.id, job.execution_time)
-    
+
     # Create dummy jobs with realistic shell commands
     class DummyJob:
         def __init__(self, job_id, command):
@@ -137,7 +137,7 @@ def test_priority_with_time_simulation():
             self.execution_time = 0.0
             self.total_time_needed = 0.0
             self.end_time = None
-    
+
     # Add jobs with different priorities and execution times
     jobs = [
         DummyJob(1, f"echo 'High priority - quick job' > {test_dir}/priority_high_quick.txt"),  # High priority, quick
@@ -145,7 +145,7 @@ def test_priority_with_time_simulation():
         DummyJob(3, f"echo 'Low priority - longer job' > {test_dir}/priority_low_long.txt"),  # Low priority, longer
         DummyJob(4, f"touch {test_dir}/priority_high_medium.txt")      # High priority, medium time
     ]
-    
+
     # Add jobs to performance tracker
     job_configs = [
         (jobs[0], 1, 0.3),   # Highest priority, quick
@@ -153,11 +153,11 @@ def test_priority_with_time_simulation():
         (jobs[2], 10, 1.0),  # Lowest priority, longer
         (jobs[3], 1, 0.5),   # High priority, medium
     ]
-    
+
     for job, priority, time_needed in job_configs:
         performance_tracker.add_job(job.id, job.command, priority, time_needed)
         scheduler.add_process(job, priority=priority, time_needed=time_needed)
-    
+
     print("Jobs added to Priority scheduler:")
     print(f"  Process 1: 'echo high priority quick' (Priority 1, 0.3s) - Should run first")
     print(f"  Process 2: 'mkdir directory' (Priority 5, 0.2s) - Should run after high priority")
@@ -165,17 +165,17 @@ def test_priority_with_time_simulation():
     print(f"  Process 4: 'touch file' (Priority 1, 0.5s) - Should run after first high priority")
     print("Expected behavior: Jobs run in priority order (1, 1, 5, 10) with time simulation")
     print("Starting scheduler...")
-    
+
     # Start the scheduler
     scheduler.start_scheduler()
-    
+
     # Wait for all jobs to complete
     while scheduler.running:
         time.sleep(0.1)
-    
+
     # End performance tracking
     performance_tracker.end_test()
-    
+
     print("Priority test completed")
     print("Checking created files:")
     try:
@@ -201,18 +201,18 @@ def test_priority_with_time_simulation():
 def test_preemption_with_time_simulation():
     """Test preemption in priority scheduling with time simulation"""
     print("=== Testing Priority Preemption with Time Simulation ===")
-    
+
     test_dir = ensure_test_directory()
-    
+
     # Start performance tracking
     performance_tracker.start_test("Priority Preemption", "priority")
-    
+
     scheduler = Scheduler()
     scheduler.set_algorithm(SchedulingAlgorithm.PRIORITY)
-    
+
     # Connect scheduler completion callback to performance tracker
     scheduler.on_process_complete = lambda job: performance_tracker.job_completed(job.id, job.execution_time)
-    
+
     # Create dummy jobs with realistic shell commands
     class DummyJob:
         def __init__(self, job_id, command):
@@ -223,36 +223,36 @@ def test_preemption_with_time_simulation():
             self.execution_time = 0.0
             self.total_time_needed = 0.0
             self.end_time = None
-    
+
     # Add a low priority job first that takes longer
     low_priority_job = DummyJob(1, f"echo 'Low priority job running' > {test_dir}/preempt_low_priority.txt")
     performance_tracker.add_job(low_priority_job.id, low_priority_job.command, 10, 4.0)
     scheduler.add_process(low_priority_job, priority=10, time_needed=4.0)
-    
+
     print("Added low priority job:")
     print(f"  Process 1: 'echo low priority job' (Priority 10, 4.0s) - Should be preempted")
     print("Starting scheduler...")
-    
+
     # Start the scheduler
     scheduler.start_scheduler()
-    
+
     # Wait a bit, then add a high priority job
     time.sleep(0.5)
     high_priority_job = DummyJob(2, f"echo 'High priority job preempting' > {test_dir}/preempt_high_priority.txt")
     performance_tracker.add_job(high_priority_job.id, high_priority_job.command, 1, 0.5)
     scheduler.add_process(high_priority_job, priority=1, time_needed=0.5)
-    
+
     print("Added high priority job after 0.5s:")
     print(f"  Process 2: 'echo high priority job' (Priority 1, 0.5s) - Should preempt low priority")
     print("Expected behavior: High priority job should preempt low priority job immediately")
-    
+
     # Wait for all jobs to complete
     while scheduler.running:
         time.sleep(0.1)
-    
+
     # End performance tracking
     performance_tracker.end_test()
-    
+
     print("Preemption test completed")
     print("Checking created files:")
     try:
@@ -274,18 +274,18 @@ def test_preemption_with_time_simulation():
 def test_early_completion_behavior():
     """Test that processes complete early when possible"""
     print("=== Testing Early Completion Behavior ===")
-    
+
     test_dir = ensure_test_directory()
-    
+
     # Start performance tracking
     performance_tracker.start_test("Early Completion", "round_robin", 1.0)
-    
+
     scheduler = Scheduler()
     scheduler.set_algorithm(SchedulingAlgorithm.ROUND_ROBIN, time_slice=1.0)
-    
+
     # Connect scheduler completion callback to performance tracker
     scheduler.on_process_complete = lambda job: performance_tracker.job_completed(job.id, job.execution_time)
-    
+
     # Create dummy jobs with realistic shell commands
     class DummyJob:
         def __init__(self, job_id, command):
@@ -296,42 +296,42 @@ def test_early_completion_behavior():
             self.execution_time = 0.0
             self.total_time_needed = 0.0
             self.end_time = None
-    
+
     # Add jobs where some complete before time slice
     jobs = [
         DummyJob(1, f"touch {test_dir}/early_complete_1.txt"),           # Very quick job
         DummyJob(2, f"echo 'Medium job' > {test_dir}/early_complete_2.txt"),  # Medium job
         DummyJob(3, f"touch {test_dir}/early_complete_3.txt"),           # Very quick job
     ]
-    
+
     # Add jobs to performance tracker
     job_configs = [
         (jobs[0], 5, 0.2),  # Completes early
         (jobs[1], 5, 0.8),  # Uses most of time slice
         (jobs[2], 5, 0.1),  # Completes very early
     ]
-    
+
     for job, priority, time_needed in job_configs:
         performance_tracker.add_job(job.id, job.command, priority, time_needed)
         scheduler.add_process(job, priority=priority, time_needed=time_needed)
-    
+
     print("Jobs added to test early completion:")
     print(f"  Process 1: 'touch file1' (0.2s) - Should complete early, next process starts immediately")
     print(f"  Process 2: 'echo content' (0.8s) - Should use most of time slice")
     print(f"  Process 3: 'touch file3' (0.1s) - Should complete very early")
     print("Expected behavior: Quick jobs complete early, scheduler moves to next job immediately")
     print("Starting scheduler...")
-    
+
     # Start the scheduler
     scheduler.start_scheduler()
-    
+
     # Wait for all jobs to complete
     while scheduler.running:
         time.sleep(0.1)
-    
+
     # End performance tracking
     performance_tracker.end_test()
-    
+
     print("Early completion test completed")
     print("Checking created files:")
     try:
@@ -352,15 +352,15 @@ def test_early_completion_behavior():
 if __name__ == "__main__":
     # Redirect all output to a text file
     output_file = "test_scheduling_with_metrics_output.txt"
-    
+
     # Save original stdout
     original_stdout = sys.stdout
-    
+
     try:
         # Redirect stdout to file
         with open(output_file, 'w') as f:
             sys.stdout = f
-            
+
             print("Advanced Shell - Scheduling Test Suite with Performance Metrics")
             print("==============================================================")
             print()
@@ -370,13 +370,13 @@ if __name__ == "__main__":
             print("3. Process execution simulated with time.sleep()")
             print("4. Performance metrics tracked for all tests")
             print()
-            
+
             try:
                 test_round_robin_configurable_time_slice()
                 test_priority_with_time_simulation()
                 test_preemption_with_time_simulation()
                 test_early_completion_behavior()
-                
+
                 print("All tests completed successfully!")
                 print("The scheduling algorithms are working correctly with configurable time slices.")
                 print("All test files and directories have been created in the 'test/' directory.")
@@ -387,17 +387,17 @@ if __name__ == "__main__":
                 print("- Time simulation using actual command execution")
                 print("- Priority-based preemption with time simulation")
                 print("- Comprehensive performance metrics collection")
-                
+
             except KeyboardInterrupt:
                 print("\nTests interrupted by user")
             except Exception as e:
                 print(f"Test error: {e}")
-                
+
     finally:
         # Restore original stdout
         sys.stdout = original_stdout
         print(f"Test output has been saved to: {output_file}")
-        
+
         # Generate performance report
         performance_tracker.generate_report("performance_metrics_report.txt")
-        print("Performance metrics report has been saved to: performance_metrics_report.txt") 
+        print("Performance metrics report has been saved to: performance_metrics_report.txt")

@@ -19,7 +19,7 @@ class JobManager:
         self.jobs: Dict[int, Job] = {}
         self.job_counter = 0
         self.scheduler = Scheduler()
-        
+
         # Set up scheduler callback
         self.scheduler.on_process_complete = self._on_scheduled_job_complete
 
@@ -39,28 +39,28 @@ class JobManager:
         self.jobs[self.job_counter] = job
         return job
 
-    def add_scheduled_job(self, command: str, args: List[str], priority: int = 5, 
+    def add_scheduled_job(self, command: str, args: List[str], priority: int = 5,
                          time_needed: float = 5.0, background: bool = True) -> Job:
         """Add a new job to the scheduler"""
         self.job_counter += 1
-        
+
         # Create a dummy process for scheduled jobs
         class DummyProcess:
             def __init__(self, job_id):
                 self.pid = job_id
                 self._poll_result = None
-            
+
             def poll(self):
                 return self._poll_result
-            
+
             def terminate(self):
                 pass
-            
+
             def kill(self):
                 pass
-        
+
         dummy_process = DummyProcess(self.job_counter)
-        
+
         job = Job(
             id=self.job_counter,
             pid=self.job_counter,  # Use job ID as PID for scheduled jobs
@@ -73,12 +73,12 @@ class JobManager:
             priority=priority,
             total_time_needed=time_needed
         )
-        
+
         self.jobs[self.job_counter] = job
-        
+
         # Add to scheduler
         self.scheduler.add_process(job, priority, time_needed)
-        
+
         return job
 
     def _on_scheduled_job_complete(self, job: Job):
@@ -261,7 +261,7 @@ class JobManager:
             # For non-scheduled jobs, check if alive
             if not hasattr(job, 'priority') or not job.priority:
                 job.is_alive()  # Update status
-            
+
             if job.status == JobStatus.DONE:
                 completed_jobs.append(job_id)
                 print(f"[{job_id}]+ Done\t\t{job.command}")

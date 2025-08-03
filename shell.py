@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 shell.py - Main shell class for Advanced Shell Simulation
+Updated for Deliverable 3: Memory Management and Process Synchronization
 """
 
 import os
@@ -130,6 +131,16 @@ class Shell:
 
                 print(f"[{job.id}] {process.pid}")
 
+                # Deliverable 3: NEW - Integrate with memory management for external commands
+                try:
+                    memory_manager = self.command_handler.get_memory_manager()
+                    if memory_manager:
+                        # Estimate memory needs for external command
+                        pages_needed = self._estimate_memory_needs(parsed.command)
+                        memory_pid = memory_manager.create_process(f"ExtCmd-{parsed.command}", pages_needed)
+                except:
+                    pass  # Don't fail if memory management unavailable
+
             else:
                 # Foreground execution
                 process = subprocess.Popen(
@@ -155,6 +166,15 @@ class Shell:
         except Exception as e:
             raise ValueError(f"Error executing {parsed.command}: {e}")
 
+    def _estimate_memory_needs(self, command: str) -> int:
+        """Estimate memory needs for external commands (NEW)"""
+        # Simple heuristic for memory estimation
+        memory_estimates = {
+            'ls': 2, 'grep': 3, 'sort': 5, 'cat': 2, 'find': 4,
+            'python': 8, 'gcc': 10, 'make': 6, 'vim': 4, 'nano': 2
+        }
+        return memory_estimates.get(command, 4)  # Default to 4 pages
+
     def display_prompt(self) -> None:
         """Show the shell prompt"""
         try:
@@ -172,7 +192,7 @@ class Shell:
     def print_welcome(self) -> None:
         """Print the welcome message"""
         print("==========================================")
-        print("  Advanced Shell Simulation - Deliverable 2")
+        print("  Advanced Shell Simulation - Deliverable 3")
         print("==========================================")
         print()
         print("Features implemented:")
@@ -186,10 +206,20 @@ class Shell:
         print("✓ Keyboard navigation (arrow keys, Ctrl+C to clear)")
         print("✓ Signal handling")
         print("✓ Error handling")
-        print("✓ Process scheduling algorithms (NEW)")
+        print("✓ Process scheduling algorithms")
         print("  • Round-Robin Scheduling")
         print("  • Priority-Based Scheduling")
-        print("✓ Performance metrics and monitoring (NEW)")
+        print("✓ Performance metrics and monitoring")
+        print("✓ Memory management with paging (NEW)")
+        print("  • FIFO and LRU page replacement algorithms")
+        print("  • Page fault handling and tracking")
+        print("  • Memory overflow simulation")
+        print("✓ Process synchronization (NEW)")
+        print("  • Mutexes and semaphores")
+        print("  • Producer-Consumer problem")
+        print("  • Dining Philosophers problem")
+        print("  • Race condition prevention")
+        print("  • Deadlock avoidance")
         print()
         print("Type 'help' for available commands")
         print("Type 'exit' to quit")
@@ -200,10 +230,35 @@ class Shell:
         print("  scheduler start               # Start scheduling")
         print("  scheduler status              # Monitor execution")
         print()
+        print("✓ Quick Start - Memory Management (NEW):")
+        print("  memory create webapp 8        # Create process needing 8 pages")
+        print("  memory alloc 1 0              # Allocate page 0 for process 1")
+        print("  memory algorithm lru          # Switch to LRU replacement")
+        print("  memory status                 # Show memory statistics")
+        print()
+        print("✓ Quick Start - Synchronization (NEW):")
+        print("  sync prodcons start 2 3       # Start Producer-Consumer")
+        print("  sync philosophers start 5     # Start Dining Philosophers")
+        print("  sync status                   # Show sync statistics")
+        print()
 
     def shutdown(self) -> None:
         """Perform cleanup before exiting"""
         print("\nShutting down shell...")
+
+        # Deliverable 3: NEW - Stop synchronization problems
+        try:
+            memory_sync_commands = getattr(self.command_handler, 'memory_sync_commands', None)
+            if memory_sync_commands:
+                if memory_sync_commands.producer_consumer:
+                    print("Stopping Producer-Consumer...")
+                    memory_sync_commands.producer_consumer.stop()
+
+                if memory_sync_commands.dining_philosophers:
+                    print("Stopping Dining Philosophers...")
+                    memory_sync_commands.dining_philosophers.stop()
+        except:
+            pass
 
         # Stop scheduler if available
         if hasattr(self.command_handler, 'process_scheduler') and self.command_handler.process_scheduler:

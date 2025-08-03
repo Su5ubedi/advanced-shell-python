@@ -178,7 +178,6 @@ class ProcessScheduler:
     def _round_robin_scheduler(self) -> None:
         """Round-Robin scheduling algorithm implementation (blocking)"""
         print("Starting Round-Robin scheduler...")
-        print(priority_queue := self.priority_queue)  # For debugging
 
         while self.running and (self.ready_queue or self.current_process):
             # Get next process from queue if needed

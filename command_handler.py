@@ -17,7 +17,6 @@ from shell_types import ParsedCommand, JobStatus
 from job_manager import JobManager
 from process_scheduler import ProcessScheduler
 from scheduler_commands import SchedulerCommands
-# Deliverable 3: NEW imports
 from shell_integration import MemorySyncCommands
 from auth_system import AuthenticationSystem, UserRole, Permission
 from pipe_handler import PipeHandler
@@ -31,7 +30,7 @@ class CommandHandler:
         # Deliverable 2: Add process scheduler
         self.process_scheduler = ProcessScheduler()
         self.scheduler_commands = SchedulerCommands(self.process_scheduler)
-        # Deliverable 3: NEW - Add memory management and synchronization
+        # Deliverable 3: Add memory management and synchronization
         self.memory_sync_commands = MemorySyncCommands()
         # Deliverable 3: Add authentication and piping
         self.auth_system = AuthenticationSystem()
@@ -259,14 +258,14 @@ class CommandHandler:
                     mode = stat.filemode(entry_stat.st_mode)
                     size = entry_stat.st_size
                     mod_time = time.strftime("%b %d %H:%M", time.localtime(entry_stat.st_mtime))
-                    
+
                     # Get user permissions for this file
                     entry_path = str(entry)
                     user_permissions = self.get_user_file_permissions(entry_path)
-                    
+
                     # Show permission status with color coding
                     permission_status = self.format_permission_status(user_permissions)
-                    
+
                     print(f"{mode} {size:>8} {mod_time} {entry.name} {permission_status}")
                 except Exception:
                     print(f"? {entry.name}")
@@ -274,12 +273,12 @@ class CommandHandler:
                 # In short format, still show permission indicators
                 entry_path = str(entry)
                 user_permissions = self.get_user_file_permissions(entry_path)
-                
+
                 if entry.is_dir():
                     print(f"{entry.name}/")
                 else:
                     print(entry.name)
-                
+
                 # Show permission indicators for files user can't access
                 if not user_permissions:
                     print(f"  (no access)")
@@ -335,11 +334,11 @@ class CommandHandler:
             try:
                 dir_path = Path(dirname)
                 target_dir = str(dir_path.parent) if dir_path.parent != Path('.') else str(Path.cwd())
-                
+
                 # Check write permission for the target directory
                 if not self.check_file_permission(target_dir, Permission.WRITE):
                     raise PermissionError(f"mkdir: {dirname}: permission denied - no write access to directory")
-                
+
                 if create_parents:
                     dir_path.mkdir(parents=True, exist_ok=True)
                 else:
@@ -364,11 +363,11 @@ class CommandHandler:
             try:
                 dir_path = Path(dirname)
                 target_dir = str(dir_path.parent) if dir_path.parent != Path('.') else str(Path.cwd())
-                
+
                 # Check write permission for the parent directory
                 if not self.check_file_permission(target_dir, Permission.WRITE):
                     raise PermissionError(f"rmdir: {dirname}: permission denied - no write access to directory")
-                
+
                 dir_path.rmdir()
             except FileNotFoundError:
                 raise ValueError(f"rmdir: {dirname}: no such file or directory")
@@ -413,13 +412,13 @@ class CommandHandler:
             try:
                 file_path = Path(filename)
                 target_dir = str(file_path.parent) if file_path.parent != Path('.') else str(Path.cwd())
-                
+
                 # Check write permission for the parent directory
                 if not self.check_file_permission(target_dir, Permission.WRITE):
                     if not force:
                         raise PermissionError(f"rm: {filename}: permission denied - no write access to directory")
                     continue
-                
+
                 if recursive and file_path.is_dir():
                     import shutil
                     shutil.rmtree(file_path)
@@ -452,11 +451,11 @@ class CommandHandler:
             try:
                 file_path = Path(filename)
                 target_dir = str(file_path.parent) if file_path.parent != Path('.') else str(Path.cwd())
-                
+
                 # Check write permission for the target directory
                 if not self.check_file_permission(target_dir, Permission.WRITE):
                     raise PermissionError(f"touch: {filename}: permission denied - no write access to directory")
-                
+
                 if file_path.exists():
                     # Update timestamp
                     file_path.touch()
@@ -610,7 +609,7 @@ class CommandHandler:
         print("Advanced Shell Simulation - Available Commands")
         print("=" * 50)
         print()
-        
+
         # Basic commands
         print("Basic Commands:")
         print("  cd [directory]     - Change directory")
@@ -620,7 +619,7 @@ class CommandHandler:
         print("  echo [text]        - Print text")
         print("  clear              - Clear screen")
         print()
-        
+
         # File operations
         print("File Operations:")
         print("  mkdir [dir]        - Create directory")
@@ -628,7 +627,7 @@ class CommandHandler:
         print("  rm [file]          - Remove file")
         print("  touch [file]       - Create empty file")
         print()
-        
+
         # Process management
         print("Process Management:")
         print("  jobs               - List background jobs")
@@ -659,7 +658,7 @@ class CommandHandler:
         print("  Arrow Keys        - Navigate cursor left/right")
         print("  Ctrl+C (in input) - Clear current command line")
         print("  Backspace         - Delete character to the left")
-        
+
         # Authentication commands
         print("Authentication:")
         print("  login [user] [pass] - Login as user")
@@ -669,7 +668,7 @@ class CommandHandler:
         print("  chpasswd [user] [pass] - Change password")
         print("  permissions [file] - Show file permissions")
         print()
-        
+
         # Scheduling commands
         print("Process Scheduling:")
         print("  scheduler config [type] [time_slice] - Configure scheduler")
@@ -679,7 +678,7 @@ class CommandHandler:
         print("  scheduler stop     - Stop scheduler")
         print()
         # Deliverable 3: NEW examples
-        print("✓ Deliverable 3 Examples (NEW):")
+        print("✓ Deliverable 3 Examples:")
         print("  memory create webapp 8         # Create process needing 8 pages")
         print("  memory alloc 1 0               # Allocate page 0 for process 1")
         print("  memory algorithm lru           # Switch to LRU replacement")
@@ -692,12 +691,12 @@ class CommandHandler:
         print("  Round-Robin: Each process gets a time slice, then moves to end of queue")
         print("  Priority: Highest priority process runs first (1=highest, 10=lowest)")
         print()
-        print("✓ Memory Management (NEW):")
+        print("✓ Memory Management:")
         print("  FIFO: First-In-First-Out page replacement")
         print("  LRU: Least Recently Used page replacement")
         print("  Page Faults: When requested page not in memory")
         print()
-        print("✓ Synchronization Problems (NEW):")
+        print("✓ Synchronization Problems:")
         print("  Producer-Consumer: Buffer synchronization with semaphores")
         print("  Dining Philosophers: Deadlock prevention with asymmetric fork acquisition")
         print()
@@ -709,13 +708,13 @@ class CommandHandler:
         print("  5. View metrics:  scheduler metrics")
         print("  6. Clear state:   scheduler clear")
         print()
-        
+
         # System commands
         print("System:")
         print("  exit               - Exit shell")
         print("  help               - Show this help")
         print()
-        
+
         # Permission information
         if self.auth_system.is_authenticated():
             user = self.auth_system.get_current_user()
@@ -729,7 +728,7 @@ class CommandHandler:
             print("File Permission Display:")
             print("  ls -l shows: [RWX] where:")
             print("    R (green) = Read permission")
-            print("    W (green) = Write permission") 
+            print("    W (green) = Write permission")
             print("    X (green) = Execute permission")
             print("    r/w/x (red) = No permission")
             print("    [NO ACCESS] = No access at all")
@@ -789,7 +788,7 @@ class CommandHandler:
     def get_synchronizer(self):
         """Get synchronizer instance for integration"""
         return self.memory_sync_commands.get_synchronizer()
-        
+
         print(f"Added job [{job.id}]: {command} (Priority: {priority}, Time: {time_needed}s, Background: {background})")
 
     def handle_login(self, args: List[str]) -> None:
@@ -805,7 +804,7 @@ class CommandHandler:
             user = self.auth_system.get_current_user()
             print(f"Welcome, {user.username}! Role: {user.role.value}")
             print(f"Home directory: {user.home_directory}")
-            
+
             # Change to user's home directory
             try:
                 os.chdir(user.home_directory)
@@ -907,12 +906,12 @@ class CommandHandler:
 
             # Get permission information
             perm_info = self.auth_system.get_file_permission_info(str(file_path))
-            
+
             print(f"\nFile: {filename}")
             print(f"  Read:    {'✓' if perm_info['read'] else '✗'}")
             print(f"  Write:   {'✓' if perm_info['write'] else '✗'}")
             print(f"  Execute: {'✓' if perm_info['execute'] else '✗'}")
-            
+
             # Show what operations are allowed
             allowed_ops = []
             if perm_info['read']:
@@ -921,7 +920,7 @@ class CommandHandler:
                 allowed_ops.append("write")
             if perm_info['execute']:
                 allowed_ops.append("execute")
-            
+
             if allowed_ops:
                 print(f"  Allowed operations: {', '.join(allowed_ops)}")
             else:
@@ -932,10 +931,10 @@ class CommandHandler:
         if len(args) < 2:
             print("Usage: grep <pattern> [file...]")
             return
-        
+
         pattern = args[1]
         files = args[2:] if len(args) > 2 else []
-        
+
         # Read from stdin if no files specified
         if not files:
             import sys
@@ -957,9 +956,9 @@ class CommandHandler:
     def handle_sort(self, args: List[str]) -> None:
         """Built-in sort command"""
         files = args[1:] if len(args) > 1 else []
-        
+
         lines = []
-        
+
         # Read from stdin if no files specified
         if not files:
             import sys
@@ -975,7 +974,7 @@ class CommandHandler:
                 except PermissionError:
                     print(f"sort: {filename}: Permission denied")
                     return
-        
+
         # Sort and print
         for line in sorted(lines):
             print(line.rstrip())
@@ -990,7 +989,7 @@ class CommandHandler:
         """Get user permissions for a specific file"""
         if not self.auth_system.is_authenticated():
             return []
-        
+
         permissions = []
         if self.check_file_permission(file_path, Permission.READ):
             permissions.append(Permission.READ)
@@ -998,30 +997,30 @@ class CommandHandler:
             permissions.append(Permission.WRITE)
         if self.check_file_permission(file_path, Permission.EXECUTE):
             permissions.append(Permission.EXECUTE)
-        
+
         return permissions
 
     def format_permission_status(self, permissions: List[Permission]) -> str:
         """Format permission status for display"""
         if not permissions:
             return "\033[31m[NO ACCESS]\033[0m"
-        
+
         status_parts = []
         if Permission.READ in permissions:
             status_parts.append("\033[32mR\033[0m")
         else:
             status_parts.append("\033[31mr\033[0m")
-            
+
         if Permission.WRITE in permissions:
             status_parts.append("\033[32mW\033[0m")
         else:
             status_parts.append("\033[31mw\033[0m")
-            
+
         if Permission.EXECUTE in permissions:
             status_parts.append("\033[32mX\033[0m")
         else:
             status_parts.append("\033[31mx\033[0m")
-        
+
         return f"[{''.join(status_parts)}]"
 
     def handle_pipe_command(self, parsed: ParsedCommand) -> str:
@@ -1032,7 +1031,7 @@ class CommandHandler:
         try:
             # Parse the pipe chain
             pipe_commands = self.pipe_handler.parse_pipe_chain(' | '.join(parsed.pipe_chain))
-            
+
             # Execute the pipe chain
             result = self.pipe_handler.execute_pipe_chain(pipe_commands, self.auth_system)
             return result

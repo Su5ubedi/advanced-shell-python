@@ -225,7 +225,7 @@ class Shell:
             raise ValueError(f"Error executing {parsed.command}: {e}")
 
     def _estimate_memory_needs(self, command: str) -> int:
-        """Estimate memory needs for external commands (NEW)"""
+        """Estimate memory needs for external commands """
         # Simple heuristic for memory estimation
         memory_estimates = {
             'ls': 2, 'grep': 3, 'sort': 5, 'cat': 2, 'find': 4,
@@ -274,19 +274,19 @@ class Shell:
         print("  • Round-Robin Scheduling")
         print("  • Priority-Based Scheduling")
         print("✓ Performance metrics and monitoring")
-        print("✓ Memory management with paging (NEW)")
+        print("✓ Memory management with paging ")
         print("  • FIFO and LRU page replacement algorithms")
         print("  • Page fault handling and tracking")
         print("  • Memory overflow simulation")
-        print("✓ Process synchronization (NEW)")
+        print("✓ Process synchronization ")
         print("  • Mutexes and semaphores")
         print("  • Producer-Consumer problem")
         print("  • Dining Philosophers problem")
         print("  • Race condition prevention")
         print("  • Deadlock avoidance")
-        print("✓ Command piping and redirection (NEW)")
-        print("✓ User authentication system (NEW)")
-        print("✓ File permissions and access control (NEW)")
+        print("✓ Command piping and redirection ")
+        print("✓ User authentication system ")
+        print("✓ File permissions and access control ")
         print("✓ READ-ONLY access for standard users (UPDATED)")
         print()
         print("Type 'help' for available commands")
@@ -313,13 +313,13 @@ class Shell:
         print("  scheduler start               # Start scheduling")
         print("  scheduler status              # Monitor execution")
         print()
-        print("✓ Quick Start - Memory Management (NEW):")
+        print("✓ Quick Start - Memory Management :")
         print("  memory create webapp 8        # Create process needing 8 pages")
         print("  memory alloc 1 0              # Allocate page 0 for process 1")
         print("  memory algorithm lru          # Switch to LRU replacement")
         print("  memory status                 # Show memory statistics")
         print()
-        print("✓ Quick Start - Synchronization (NEW):")
+        print("✓ Quick Start - Synchronization :")
         print("  sync prodcons start 2 3       # Start Producer-Consumer")
         print("  sync philosophers start 5     # Start Dining Philosophers")
         print("  sync status                   # Show sync statistics")

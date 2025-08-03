@@ -11,8 +11,7 @@ Integrates memory management and process synchronization into the existing shell
 from memory_manager import MemoryManager
 from process_sync import ProcessSynchronizer, ProducerConsumer, DiningPhilosophers
 import threading
-import time
-from typing import Dict, List
+from typing import List
 
 
 class MemorySyncCommands:
@@ -67,8 +66,8 @@ class MemorySyncCommands:
             return self._sync_help()
 
     def _memory_help(self) -> str:
-        """Memory management help (NEW)"""
-        return """✓ Memory Management Commands (NEW - Deliverable 3):
+        """Memory management help"""
+        return """✓ Memory Management Commands:
 memory status                     - Show memory status and statistics
 memory create <name> <pages>      - Create process with pages needed
 memory alloc <pid> <page_num>     - Allocate specific page for process
@@ -77,8 +76,8 @@ memory algorithm <fifo|lru>       - Set page replacement algorithm
 memory test <sequential|random>   - Run memory access pattern test"""
 
     def _sync_help(self) -> str:
-        """Synchronization help (NEW)"""
-        return """✓ Process Synchronization Commands (NEW - Deliverable 3):
+        """Synchronization help"""
+        return """✓ Process Synchronization Commands:
 sync status                               - Show synchronization status
 sync mutex <create|acquire|release> <name>    - Mutex operations
 sync semaphore <create|acquire|release> <name> [value] - Semaphore operations
@@ -86,17 +85,17 @@ sync prodcons <start|stop|status> [producers] [consumers] - Producer-Consumer
 sync philosophers <start|stop|status> [num_philosophers] - Dining Philosophers"""
 
     def _memory_status(self) -> str:
-        """Get memory status (NEW)"""
+        """Get memory status"""
         status = self.memory_manager.get_status()
 
-        result = f"""=== MEMORY MANAGEMENT STATUS (NEW) ===
+        result = f"""=== MEMORY MANAGEMENT STATUS ===
 Total Frames: {status['total_frames']}
 Used Frames: {status['used_frames']}
 Free Frames: {status['free_frames']}
 ✓ Memory Utilization: {status['utilization']:.1f}%
 ✓ Page Replacement: {status['algorithm'].upper()}
 
-=== PAGING STATISTICS (NEW) ===
+=== PAGING STATISTICS===
 ✓ Page Faults: {status['page_faults']}
 ✓ Page Hits: {status['page_hits']}
 ✓ Page Replacements: {status['replacements']}
@@ -104,7 +103,7 @@ Free Frames: {status['free_frames']}
 Active Processes: {status['processes']}"""
 
         if self.memory_manager.processes:
-            result += "\n\n=== ACTIVE PROCESSES (NEW) ==="
+            result += "\n\n=== ACTIVE PROCESSES==="
             for pid, process in self.memory_manager.processes.items():
                 allocated = len([p for p in process.page_table.values() if p is not None])
                 result += f"\nPID {pid} ({process.name}): {allocated}/{process.pages_needed} pages"

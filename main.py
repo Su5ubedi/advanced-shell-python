@@ -25,11 +25,11 @@ def show_version():
     print("  * Priority-Based Scheduling")
     print("- Performance metrics")
     print("- Real-time process monitoring")
-    print("✓ Memory management with paging (Deliverable 3 - NEW)")
+    print("✓ Memory management with paging (Deliverable 3)")
     print("  * FIFO and LRU page replacement algorithms")
     print("  * Page fault handling and tracking")
     print("  * Memory overflow simulation")
-    print("✓ Process synchronization (Deliverable 3 - NEW)")
+    print("✓ Process synchronization (Deliverable 3 )")
     print("  * Mutexes and semaphores")
     print("  * Producer-Consumer problem")
     print("  * Dining Philosophers problem")
@@ -42,7 +42,7 @@ def show_version():
 
 def show_help():
     """Show help information"""
-    print("Advanced Shell Simulation - Deliverable 3")
+    print("Advanced Shell Simulation")
     print()
     print("Usage:")
     print("  python3 main.py [options]")
